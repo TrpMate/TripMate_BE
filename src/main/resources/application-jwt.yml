@@ -1,5 +1,0 @@
-# JWT 관련 설정 파일
-jwt:
-  secret: ENC(QJqqHpLRiNU5PYkD83HdCE8pr0UYNbBgM4ivZFpYa3VFoxRtEOnrC4HF4TGzgpGhzA+iqrBt9QY=)
-  token-validity-in-seconds: 1800 # 유효 기간: 30분
-  refresh-token-validity-in-seconds: 86400 # 유효 기간: 하루
