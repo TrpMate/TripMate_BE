@@ -43,7 +43,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = findUserByEmail(email);
 
         // 계정이 활성화되지 않은 경우 예외 발생
-        if (!user.isEnabled()) {
+        if (!user.isAccountEnabled()) {
             throw new UserNotEnabledException("계정이 활성화되지 않았습니다. 이메일 인증을 완료해주세요.");
         }
 
