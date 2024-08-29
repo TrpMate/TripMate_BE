@@ -56,7 +56,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .socialType(registrationId)
                 .socialId(userInfo.getId())
                 .password("") // OAuth 로그인에서는 비밀번호가 필요 없으므로 빈 문자열로 설정
-                .enabled(true)
+                .accountEnabled(true)
                 .build();
     }
 

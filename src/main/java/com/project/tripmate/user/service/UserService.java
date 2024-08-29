@@ -38,7 +38,7 @@ public class UserService {
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .credentialsNonExpired(true)
-                .enabled(false)
+                .accountEnabled(false)
                 .mailVerificationToken(verificationToken)
                 .build();
 

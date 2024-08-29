@@ -37,20 +37,35 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "account_non_expired")
     private boolean accountNonExpired; // 계정 만료 여부
-    private boolean accountNonLocked; // 계정 잠김 여부
-    private boolean credentialsNonExpired; // 자격 증명 만료 여부
-    private boolean enabled; // 계정 활성화 여부
 
+    @Column(name = "account_non_locked")
+    private boolean accountNonLocked; // 계정 잠김 여부
+
+    @Column(name = "credentials_non_expired")
+    private boolean credentialsNonExpired; // 자격 증명 만료 여부
+
+    @Column(name = "account_enabled")
+    private boolean accountEnabled; // 계정 활성화 여부
+
+    @Column(name = "mail_verification_token")
     private String mailVerificationToken; // 이메일 인증 토큰
 
+    @Column(name = "failed_login_attempts")
     private int failedLoginAttempts; // 로그인 시도 횟수
+
     private LocalDateTime lockTime; // 계정 잠금 해제 시간
 
+    @Column(name = "social_type")
     private String socialType; // 소셜 타입 (자체 로그인의 경우 Null)
+
+
+    @Column(name = "social_id")
     private String socialId; // 소셜 ID  (자체 로그인의 경우 Null)
 
     // 사용자의 온라인 상태
+    @Column(name = "online_status")
     private boolean onlineStatus; // true: 온라인, false: 오프라인
 
 //    @ManyToMany(mappedBy = "users")
@@ -73,7 +88,7 @@ public class User {
         this.username = requestDTO.getUsername();
         this.email = requestDTO.getEmail();
         this.mailVerificationToken = mailVerificationToken;
-        this.enabled = false;
+        this.accountEnabled = false;
 
         // 새로운 비밀번호가 null이 아니고, 기존 비밀번호와 다를 때만 인코딩하여 업데이트
         if (requestDTO.getPassword() != null && !requestDTO.getPassword().equals(this.password)) {
@@ -88,7 +103,7 @@ public class User {
 
     // 인증 받으면 계정 활성화
     public void enableAccount() {
-        this.enabled = true;
+        this.accountEnabled = true;
         this.mailVerificationToken = null;
     }
 
@@ -129,7 +144,7 @@ public class User {
         }
         this.socialType = socialType;
         this.socialId = socialId;
-        this.enabled = true; // OAuth 로그인 후 사용자는 활성화 상태
+        this.accountEnabled = true; // OAuth 로그인 후 사용자는 활성화 상태
     }
 
 }
