@@ -1,6 +1,6 @@
 package com.project.tripmate.config;
 
-import com.project.tripmate.config.commons.WebSocketHandler;
+import com.project.tripmate.global.commons.WebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

@@ -1,9 +1,9 @@
-package com.project.tripmate.config.commons.exceptions;
+package com.project.tripmate.global.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.project.tripmate.config.commons.utils.MessageUtils;
+import com.project.tripmate.global.commons.utils.MessageUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
 
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommonRestException extends CommonException{
+public class CommonRestException extends CommonException {
     public CommonRestException(Errors errors , HttpStatus status){
         super(toJSON(errors) , status);
     }

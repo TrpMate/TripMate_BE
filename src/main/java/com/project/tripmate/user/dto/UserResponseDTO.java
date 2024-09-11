@@ -9,6 +9,7 @@ import lombok.Getter;
 public class UserResponseDTO {
     private final Long id;
     private final String username;
+    private final String nickname;
     private final String email;
 
     // User 엔티티를 UserResponseDTO로 변환하는 메서드
@@ -16,6 +17,7 @@ public class UserResponseDTO {
         return UserResponseDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .build();
     }

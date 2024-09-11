@@ -1,4 +1,4 @@
-package com.project.tripmate.config.commons;
+package com.project.tripmate.global.commons;
 
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.stereotype.Component;

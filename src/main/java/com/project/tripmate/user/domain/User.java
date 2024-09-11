@@ -25,6 +25,8 @@ public class User {
 
     private String username;
 
+    private String nickname;
+
     private String password;
 
     private String email;
@@ -86,6 +88,7 @@ public class User {
 
     public void updateUser(UserRequestDTO requestDTO, PasswordEncoder passwordEncoder,String mailVerificationToken) {
         this.username = requestDTO.getUsername();
+        this.nickname = requestDTO.getNickname();
         this.email = requestDTO.getEmail();
         this.mailVerificationToken = mailVerificationToken;
         this.accountEnabled = false;
@@ -139,6 +142,7 @@ public class User {
 
     public void updateOAuthUser(String username, String email, String socialType, String socialId) {
         this.username = username;
+        this.nickname = username;
         if (email != null) {
             this.email = email;
         }

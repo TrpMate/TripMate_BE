@@ -1,4 +1,4 @@
-package com.project.tripmate.config.commons;
+package com.project.tripmate.global.commons;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;

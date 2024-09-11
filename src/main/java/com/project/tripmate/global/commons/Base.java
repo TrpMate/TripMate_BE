@@ -1,4 +1,4 @@
-package com.project.tripmate.config.commons;
+package com.project.tripmate.global.commons;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;

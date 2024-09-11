@@ -1,4 +1,4 @@
-package com.project.tripmate.config.commons.rests;
+package com.project.tripmate.global.commons.rests;
 
 
 import lombok.AllArgsConstructor;

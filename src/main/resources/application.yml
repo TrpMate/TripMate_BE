@@ -7,7 +7,7 @@ spring:
       local: db, jwt, mail, oauth
     active: local
   application:
-    name: secure-login
+    name: trip-mate
   mvc:
     web:
       encoding:
