@@ -33,6 +33,7 @@ public class UserService {
 
         User user = User.builder()
                 .username(userRequestDTO.getUsername())
+                .nickname(userRequestDTO.getNickname())
                 .password(encodedPassword)
                 .email(userRequestDTO.getEmail())
                 .accountNonExpired(true)

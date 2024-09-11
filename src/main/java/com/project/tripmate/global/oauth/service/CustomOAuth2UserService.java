@@ -52,6 +52,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User createNewUser(OAuth2UserInfo userInfo, String registrationId) {
         return User.builder()
                 .username(userInfo.getName())
+                .nickname(userInfo.getName())
                 .email(userInfo.getEmail()) // 이메일 추가
                 .socialType(registrationId)
                 .socialId(userInfo.getId())

@@ -1,7 +1,7 @@
-package com.project.tripmate.config.commons.rests;
+package com.project.tripmate.global.commons.rests;
 
 
-import com.project.tripmate.config.commons.Pagination;
+import com.project.tripmate.global.commons.Pagination;
 import lombok.Data;
 
 import java.util.List;

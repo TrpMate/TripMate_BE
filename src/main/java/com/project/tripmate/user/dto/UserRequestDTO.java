@@ -18,6 +18,9 @@ public class UserRequestDTO {
             message = "비밀번호는 영문 대소문자, 숫자, 특수문자를 포함하여 8~16자여야 합니다")
     private final String password;
 
+    @NotBlank(message = "닉네임을 입력해주세요")
+    private final String nickname;
+
     @NotBlank(message = "이메일을 입력해주세요")
     @Email(message = "올바른 이메일 형식이 아닙니다")
     private final String email;
@@ -26,6 +29,7 @@ public class UserRequestDTO {
     public String toString() {
         return "SignUpRequest{" +
                 "username='" + username + '\'' +
+                "nickname='" + nickname + '\'' +
                 ", password='[PROTECTED]'" +
                 ", email='" + email + '\'' +
                 '}';

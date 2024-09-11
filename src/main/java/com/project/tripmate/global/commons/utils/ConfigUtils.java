@@ -1,4 +1,4 @@
-package com.project.tripmate.config.commons.utils;
+package com.project.tripmate.global.commons.utils;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

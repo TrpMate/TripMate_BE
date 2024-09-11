@@ -1,4 +1,4 @@
-package com.project.tripmate.config.commons.exceptions;
+package com.project.tripmate.global.exception;
 
 import org.springframework.http.HttpStatus;
 
