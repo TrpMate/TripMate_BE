@@ -1,6 +1,6 @@
 package com.project.tripmate.user.controller;
 
-import com.project.tripmate.global.dto.UserJsonResponse;
+import com.project.tripmate.global.jsonResponse.UserJsonResponse;
 import com.project.tripmate.user.dto.UserRequestDTO;
 import com.project.tripmate.user.dto.UserResponseDTO;
 import com.project.tripmate.user.service.UserService;

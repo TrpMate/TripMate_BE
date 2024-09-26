@@ -1,6 +1,6 @@
 package com.project.tripmate.global.oauth.handler;
 
-import com.project.tripmate.global.dto.UserJsonResponse;
+import com.project.tripmate.global.jsonResponse.UserJsonResponse;
 import com.project.tripmate.global.jwt.JwtTokenProvider;
 import com.project.tripmate.global.oauth.domain.CustomOAuth2User;
 import com.project.tripmate.global.oauth.service.CustomOAuth2UserService;

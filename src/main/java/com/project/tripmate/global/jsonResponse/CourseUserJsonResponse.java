@@ -1,17 +1,16 @@
-package com.project.tripmate.global.dto;
+package com.project.tripmate.tourAPI.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.tripmate.user.dto.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserJsonResponse {
+public class CourseUserJsonResponse {
     private final int statusCode;
     private final String message;
-    private UserResponseDTO data;
+    private CourseUserDTO data;
 
     public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
@@ -22,6 +21,4 @@ public class UserJsonResponse {
             return "{}";
         }
     }
-
-
 }
