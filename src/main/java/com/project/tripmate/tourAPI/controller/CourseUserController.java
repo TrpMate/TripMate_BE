@@ -2,7 +2,7 @@ package com.project.tripmate.tourAPI.controller;
 
 import com.project.tripmate.tourAPI.domain.CourseUser;
 import com.project.tripmate.tourAPI.dto.CourseUserDTO;
-import com.project.tripmate.tourAPI.dto.CourseUserJsonResponse;
+import com.project.tripmate.global.jsonResponse.CourseUserJsonResponse;
 import com.project.tripmate.tourAPI.service.CourseUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

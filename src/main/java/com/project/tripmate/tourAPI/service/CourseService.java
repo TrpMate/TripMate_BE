@@ -1,6 +1,7 @@
 package com.project.tripmate.tourAPI.service;
 
 import com.project.tripmate.tourAPI.domain.Course;
+import com.project.tripmate.tourAPI.dto.CourseDTO;
 import com.project.tripmate.tourAPI.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ public class CourseService {
         this.courseRepository = courseRepository;
     }
 
-    public Course createCourse(LocalDate startDate, LocalDate endDate) {
+    public Course createCourse(CourseDTO courseDTO) {
         Course course = Course.builder()
-                .startDate(startDate)
-                .endDate(endDate)
+                .courseName(courseDTO.getCourseName())
+                .isPublic(courseDTO.isPublic())
+                .startDate(courseDTO.getStartDate())
+                .endDate(courseDTO.getEndDate())
                 .build();
         return courseRepository.save(course);
     }
@@ -35,11 +38,11 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public Course updateCourse(Long id, LocalDate startDate, LocalDate endDate) {
+    public Course updateCourse(Long id, String courseName, boolean isPublic, LocalDate startDate, LocalDate endDate) {
         Optional<Course> optionalCourse = courseRepository.findById(id);
         if (optionalCourse.isPresent()) {
             Course course = optionalCourse.get();
-            course.setDates(startDate, endDate);
+            course.setCourse(courseName, isPublic, startDate, endDate);
             return courseRepository.save(course);
         } else {
             return null; // or throw an exception
@@ -49,4 +52,8 @@ public class CourseService {
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }
+
+
+    // 코스 추천
+
 }

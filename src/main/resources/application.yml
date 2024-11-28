@@ -4,7 +4,7 @@ server:
 spring:
   profiles:
     group:
-      local: db, jwt, mail, oauth, api
+      local: db, jwt, mail, oauth, api, build
     active: local
   application:
     name: trip-mate
@@ -16,7 +16,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

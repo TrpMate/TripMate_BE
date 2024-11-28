@@ -2,7 +2,7 @@ package com.project.tripmate.tourAPI.controller;
 
 import com.project.tripmate.tourAPI.domain.Course;
 import com.project.tripmate.tourAPI.dto.CourseDTO;
-import com.project.tripmate.tourAPI.dto.CourseJsonResponse;
+import com.project.tripmate.global.jsonResponse.CourseJsonResponse;
 import com.project.tripmate.tourAPI.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,15 +21,15 @@ public class CourseController {
 
     private final CourseService courseService;
 
+    // 코스 생성
     @PostMapping
-    public ResponseEntity<CourseJsonResponse> createCourse(@RequestParam LocalDate startDate,
-                                                           @RequestParam LocalDate endDate) {
-        Course course = courseService.createCourse(startDate, endDate);
-        CourseDTO courseDTO = convertToDTO(course);
+    public ResponseEntity<CourseJsonResponse> createCourse(@RequestBody CourseDTO courseDTO) {
+        courseService.createCourse(courseDTO);
         CourseJsonResponse response = new CourseJsonResponse(HttpStatus.CREATED.value(), "Course created successfully", courseDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    // 코스 조회
     @GetMapping("/{id}")
     public ResponseEntity<CourseJsonResponse> getCourseById(@PathVariable Long id) {
         Optional<Course> course = courseService.getCourseById(id);
@@ -38,10 +38,12 @@ public class CourseController {
             CourseJsonResponse response = new CourseJsonResponse(HttpStatus.OK.value(), "Course found", courseDTO);
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CourseJsonResponse(HttpStatus.NOT_FOUND.value(), "Course not found", null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CourseJsonResponse(HttpStatus.NOT_FOUND.value(), "Course not found", null));
         }
     }
 
+    // 코스 검색
     @GetMapping
     public ResponseEntity<CourseJsonResponse> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();
@@ -52,20 +54,22 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    // 코스 업데이트
     @PutMapping("/{id}")
     public ResponseEntity<CourseJsonResponse> updateCourse(@PathVariable Long id,
-                                                           @RequestParam LocalDate startDate,
-                                                           @RequestParam LocalDate endDate) {
-        Course updatedCourse = courseService.updateCourse(id, startDate, endDate);
+                                                           @RequestBody CourseDTO courseDTO) {
+        Course updatedCourse = courseService.updateCourse(id, courseDTO.getCourseName(), courseDTO.isPublic(), courseDTO.getStartDate(), courseDTO.getEndDate());
         if (updatedCourse != null) {
-            CourseDTO courseDTO = convertToDTO(updatedCourse);
-            CourseJsonResponse response = new CourseJsonResponse(HttpStatus.OK.value(), "Course updated successfully", courseDTO);
+            CourseDTO updatedCourseDTO = convertToDTO(updatedCourse);
+            CourseJsonResponse response = new CourseJsonResponse(HttpStatus.OK.value(), "Course updated successfully", updatedCourseDTO);
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CourseJsonResponse(HttpStatus.NOT_FOUND.value(), "Course not found", null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CourseJsonResponse(HttpStatus.NOT_FOUND.value(), "Course not found", null));
         }
     }
 
+    // 코스 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<CourseJsonResponse> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
@@ -77,6 +81,8 @@ public class CourseController {
     private CourseDTO convertToDTO(Course course) {
         return new CourseDTO(
                 course.getId(),
+                course.getCourseName(),
+                course.isPublic(),
                 course.getStartDate(),
                 course.getEndDate(),
                 course.getCreatedAt(),
@@ -84,3 +90,4 @@ public class CourseController {
         );
     }
 }
+

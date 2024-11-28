@@ -23,10 +23,12 @@ public class UserController {
     public ResponseEntity<UserJsonResponse> signUp(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         try {
             UserResponseDTO userResponseDTO = userService.signUp(userRequestDTO);
-            UserJsonResponse response = new UserJsonResponse(HttpStatus.CREATED.value(), "회원 가입이 성공적으로 실행되었습니다. 이메일 인증을 완료해주세요.", userResponseDTO);
+            UserJsonResponse response = new UserJsonResponse(HttpStatus.CREATED.value(),
+                    "회원 가입이 성공적으로 실행되었습니다. 이메일 인증을 완료해주세요.", userResponseDTO);
             return ResponseEntity.ok().body(response);
         } catch (IllegalStateException | MessagingException e) {
-            UserJsonResponse errorResponse = new UserJsonResponse(HttpStatus.BAD_REQUEST.value(), "이미 등록된 이메일입니다.", null);
+            UserJsonResponse errorResponse = new UserJsonResponse(HttpStatus.BAD_REQUEST.value(), "이미 등록된 이메일입니다.",
+                    null);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
@@ -36,20 +38,24 @@ public class UserController {
     public ResponseEntity<UserJsonResponse> getUser(@PathVariable Long userId) {
         try {
             UserResponseDTO userResponseDTO = userService.getUserById(userId);
-            UserJsonResponse response = new UserJsonResponse(HttpStatus.OK.value(), "회원 정보를 성공적으로 조회했습니다.", userResponseDTO);
+            UserJsonResponse response = new UserJsonResponse(HttpStatus.OK.value(), "회원 정보를 성공적으로 조회했습니다.",
+                    userResponseDTO);
             return ResponseEntity.ok().body(response);
         } catch (IllegalStateException e) {
-            UserJsonResponse errorResponse = new UserJsonResponse(HttpStatus.NOT_FOUND.value(), "사용자를 찾을 수 없습니다.", null);
+            UserJsonResponse errorResponse = new UserJsonResponse(HttpStatus.NOT_FOUND.value(), "사용자를 찾을 수 없습니다.",
+                    null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
 
     // 회원 정보 수정
     @PutMapping("/{userId}")
-    public ResponseEntity<UserJsonResponse> updateUser(@PathVariable Long userId, @Valid @RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserJsonResponse> updateUser(@PathVariable Long userId,
+            @Valid @RequestBody UserRequestDTO userRequestDTO) {
         try {
             UserResponseDTO userResponseDTO = userService.updateUser(userId, userRequestDTO);
-            UserJsonResponse response = new UserJsonResponse(HttpStatus.OK.value(), "회원 정보를 성공적으로 수정했습니다. 이메일 인증을 완료해주세요.", userResponseDTO);
+            UserJsonResponse response = new UserJsonResponse(HttpStatus.OK.value(),
+                    "회원 정보를 성공적으로 수정했습니다. 이메일 인증을 완료해주세요.", userResponseDTO);
             return ResponseEntity.ok().body(response);
         } catch (IllegalStateException e) {
             UserJsonResponse errorResponse = new UserJsonResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
@@ -62,10 +68,12 @@ public class UserController {
     public ResponseEntity<UserJsonResponse> deleteUser(@PathVariable Long userId) {
         try {
             userService.deleteUser(userId);
-            UserJsonResponse response = new UserJsonResponse(HttpStatus.NO_CONTENT.value(), "회원 정보를 성공적으로 삭제했습니다.", null);
+            UserJsonResponse response = new UserJsonResponse(HttpStatus.NO_CONTENT.value(), "회원 정보를 성공적으로 삭제했습니다.",
+                    null);
             return ResponseEntity.ok().body(response);
         } catch (IllegalStateException e) {
-            UserJsonResponse errorResponse = new UserJsonResponse(HttpStatus.NOT_FOUND.value(), "사용자를 찾을 수 없습니다.", null);
+            UserJsonResponse errorResponse = new UserJsonResponse(HttpStatus.NOT_FOUND.value(), "사용자를 찾을 수 없습니다.",
+                    null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }

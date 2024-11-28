@@ -1,0 +1,45 @@
+steps:
+  # gradle BUILD
+  - name: 'gradle:8.5.0-jdk17'
+    args:
+      - './gradlew'
+      - 'clean'
+      - 'build'
+
+  # docker BUILD
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+      - '-f'
+      - '.deploy/Dockerfile'
+      - '.'
+
+  # docker PUSH
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api:latest'
+
+  # CloudRun DEPLOY
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'goodong-api'
+      - '--image'
+      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--region'
+      - 'asia-east1'
+
+
+images:
+  - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

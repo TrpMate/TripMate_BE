@@ -43,7 +43,8 @@ public class SecurityConfig {
     }
 
     @Bean // AuthenticationManager 빈을 생성 (인증 요청 처리)
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -57,7 +58,8 @@ public class SecurityConfig {
                 // HTTP 요청에 대한 인가 규칙 설정
                 .authorizeHttpRequests(auth -> auth
                         // 로그인과 회원가입 페이지는 누구나 접근 가능
-                        .requestMatchers("/login", "/auth/login", "/user/signup", "user/verify/**", "/").permitAll() // 로그인과 회원가입은 누구나 접근 가능
+                        .requestMatchers("/login", "/auth/login", "/user/signup", "/user/verify/**", "/tourAPI/**",
+                                "/course/**").permitAll() // 로그인과 회원가입은 누구나 접근 가능
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
                 // 폼 로그인 설정
@@ -74,7 +76,8 @@ public class SecurityConfig {
                         )
                 )
                 .cors(Customizer.withDefaults()) // CORS 설정 적용
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

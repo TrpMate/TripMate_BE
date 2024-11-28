@@ -25,6 +25,10 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String courseName;
+
+    private boolean isPublic; // true면 검색 가능, false면 공유 링크로만 접근
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -35,9 +39,15 @@ public class Course {
 
     private LocalDate endDate;
 
-    public void setDates(LocalDate startDate, LocalDate endDate) {
+    public void setCourse(String courseName, boolean isPublic, LocalDate startDate, LocalDate endDate) {
+        this.courseName = courseName;
+        this.isPublic = isPublic;
         this.startDate = startDate;
         this.endDate = endDate;
     };
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 
 }

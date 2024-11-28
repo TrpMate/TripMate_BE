@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class CourseDayDTO {
+
     private final Long id;
     private final Long courseId;
     private final int dayNum;

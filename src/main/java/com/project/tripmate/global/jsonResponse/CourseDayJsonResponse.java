@@ -1,7 +1,8 @@
-package com.project.tripmate.tourAPI.dto;
+package com.project.tripmate.global.jsonResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.tripmate.tourAPI.dto.CourseDayDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
