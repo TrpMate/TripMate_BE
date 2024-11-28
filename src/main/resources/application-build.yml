@@ -1,45 +1,45 @@
 steps:
-  # gradle BUILD
-  - name: 'gradle:8.8.0-jdk17'
+  # gradle BUILD (gradle 8.8 사용)
+  - name: 'gradle:8.8-jdk17'  # Gradle 8.8, JDK 17 이미지를 사용
     args:
       - './gradlew'
       - 'clean'
-      - 'build'
+      - 'build'  # Spring Boot 애플리케이션 빌드
 
   # docker BUILD
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/cloud-builders/docker'  # Docker 이미지를 빌드하는 Cloud Build 공식 이미지
     args:
       - 'build'
       - '-t'
-      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+      - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api'  # Docker 이미지 태그 설정
       - '-f'
-      - '.deploy/Dockerfile'
-      - '.'
+      - 'Dockerfile'  # Dockerfile 경로 (위치가 .deploy 폴더라면 .deploy/Dockerfile로 수정)
+      - '.'  # 현재 디렉토리에서 Dockerfile을 기준으로 빌드
 
   # docker PUSH
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api:latest'
+      - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api:latest'  # 최신 태그로 push
 
-  # CloudRun DEPLOY
+  # Cloud Run DEPLOY
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'goodong-api'
+      - 'tripmate-api'
       - '--image'
-      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+      - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api'  # Cloud Run에 배포할 Docker 이미지
       - '--platform'
       - 'managed'
-      - '--allow-unauthenticated'
+      - '--allow-unauthenticated'  # 인증 없이 접근 허용 (필요에 따라 조정 가능)
       - '--region'
-      - 'asia-east1'
-
+      - 'asia-east1'  # Cloud Run 배포 지역 설정
 
 images:
-  - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+  - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api'  # Docker 이미지 푸시 위치 설정
 
 options:
-  logging: CLOUD_LOGGING_ONLY
+  logging: CLOUD_LOGGING_ONLY  # 빌드 로그를 Cloud Logging에만 기록
+
