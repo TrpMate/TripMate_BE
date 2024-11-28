@@ -1,8 +1,28 @@
 # Use official OpenJDK image as base image
 FROM openjdk:17-jdk-slim
 
+# Install Gradle (Optional, if you need to build inside Docker)
+RUN apt-get update && apt-get install -y wget unzip && \
+    wget https://services.gradle.org/distributions/gradle-8.8-bin.zip -P /tmp && \
+    unzip /tmp/gradle-8.8-bin.zip -d /opt && \
+    rm /tmp/gradle-8.8-bin.zip && \
+    ln -s /opt/gradle-8.8/bin/gradle /usr/bin/gradle
+
 # Set the working directory
 WORKDIR /app
+
+# Copy the Gradle wrapper files
+COPY gradlew gradlew.bat /app/
+COPY gradle /app/gradle
+
+# Make the Gradle wrapper executable
+RUN chmod +x gradlew
+
+# Copy the source code into the container
+COPY . /app
+
+# Build the application (This will run Gradle build)
+RUN ./gradlew clean build
 
 # Copy the jar file from the build directory
 COPY build/libs/*.jar app.jar
