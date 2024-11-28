@@ -1,6 +1,6 @@
 steps:
   # gradle BUILD
-  - name: 'gradle:8.5.0-jdk17'
+  - name: 'gradle:8.8.0-jdk17'
     args:
       - './gradlew'
       - 'clean'
