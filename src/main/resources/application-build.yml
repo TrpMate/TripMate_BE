@@ -1,45 +1,45 @@
 steps:
-  # gradle BUILD (gradle 8.8 사용)
-  - name: 'gradle:8.8-jdk17'  # Gradle 8.8, JDK 17 이미지를 사용
+  # Gradle 빌드
+  - name: 'gradle:8.8-jdk17'
     args:
-      - './gradlew build -x test'
       - 'clean'
-      - 'build'  # Spring Boot 애플리케이션 빌드
+      - 'build'
+      - '-x'
+      - 'test'
 
-  # docker BUILD
-  - name: 'gcr.io/cloud-builders/docker'  # Docker 이미지를 빌드하는 Cloud Build 공식 이미지
+  # Docker 이미지 빌드
+  - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api'  # Docker 이미지 태그 설정
+      - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
       - '-f'
-      - 'Dockerfile'  # Dockerfile 경로 (위치가 .deploy 폴더라면 .deploy/Dockerfile로 수정)
-      - '.'  # 현재 디렉토리에서 Dockerfile을 기준으로 빌드
+      - 'Dockerfile'
+      - '.'
 
-  # docker PUSH
+  # Docker 이미지 푸시
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api:latest'  # 최신 태그로 push
+      - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
 
-  # Cloud Run DEPLOY
+  # Cloud Run 배포
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    entrypoint: 'gcloud'
     args:
       - 'run'
       - 'deploy'
-      - 'tripmate-api'
+      - '[SERVICE_NAME]'
       - '--image'
-      - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api'  # Cloud Run에 배포할 Docker 이미지
+      - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
       - '--platform'
       - 'managed'
-      - '--allow-unauthenticated'  # 인증 없이 접근 허용 (필요에 따라 조정 가능)
       - '--region'
-      - 'asia-east1'  # Cloud Run 배포 지역 설정
+      - 'asia-east1'
+      - '--allow-unauthenticated'  # 인증 없이 접근 허용
 
 images:
-  - 'asia-east1-docker.pkg.dev/com.project.tripmate/tripmate-api'  # Docker 이미지 푸시 위치 설정
+  - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY  # 빌드 로그를 Cloud Logging에만 기록
-
