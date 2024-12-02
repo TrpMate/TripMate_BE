@@ -8,14 +8,15 @@ WORKDIR /app
 COPY gradlew gradlew.bat /app/
 COPY gradle /app/gradle
 
-# Convert gradlew line endings to LF and set execute permission
-RUN dos2unix gradlew && chmod +x gradlew
+# Install dos2unix to convert line endings
+RUN apt-get update && apt-get install -y dos2unix && \
+    dos2unix gradlew && chmod +x gradlew
 
 # Copy the source code into the container
 COPY . /app
 
-# Install dependencies (including dos2unix to handle line endings)
-RUN apt-get update && apt-get install -y wget unzip dos2unix && \
+# Install dependencies (including Gradle)
+RUN apt-get install -y wget unzip && \
     wget https://services.gradle.org/distributions/gradle-8.8-bin.zip -P /tmp && \
     unzip /tmp/gradle-8.8-bin.zip -d /opt && \
     rm /tmp/gradle-8.8-bin.zip && \
