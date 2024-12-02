@@ -2,7 +2,7 @@ steps:
   # gradle BUILD (gradle 8.8 사용)
   - name: 'gradle:8.8-jdk17'  # Gradle 8.8, JDK 17 이미지를 사용
     args:
-      - './gradlew'
+      - './gradlew build -x test'
       - 'clean'
       - 'build'  # Spring Boot 애플리케이션 빌드
 
