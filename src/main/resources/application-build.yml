@@ -1,45 +1,34 @@
 steps:
-  # Gradle 빌드
-  - name: 'gradle:8.8-jdk17'
-    args:
-      - 'clean'
-      - 'build'
-      - '-x'
-      - 'test'
-
-  # Docker 이미지 빌드
+  # Docker 이미지를 빌드
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
-      - '-f'
-      - 'Dockerfile'
-      - '.'
+      - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'  # Docker 이미지 이름
+      - '.'  # Dockerfile이 위치한 디렉토리 (현재 디렉토리)
+    id: 'Build Docker image'
 
-  # Docker 이미지 푸시
+  # Docker 이미지를 GCR에 푸시
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
+      - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'
+    id: 'Push Docker image to GCR'
 
-  # Cloud Run 배포
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
+  # Cloud Run에 배포
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
       - 'deploy'
-      - '[SERVICE_NAME]'
+      - 'tmp-be-app'
       - '--image'
-      - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
+      - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'
       - '--platform'
       - 'managed'
       - '--region'
-      - 'asia-east1'
-      - '--allow-unauthenticated'  # 인증 없이 접근 허용
+      - 'us-central1'
+      - '--allow-unauthenticated'
+    id: 'Deploy to Cloud Run'
 
 images:
-  - 'asia-east1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY]/[IMAGE_NAME]:latest'
-
-options:
-  logging: CLOUD_LOGGING_ONLY  # 빌드 로그를 Cloud Logging에만 기록
+  - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'
