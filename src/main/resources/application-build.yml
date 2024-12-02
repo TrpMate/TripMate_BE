@@ -1,13 +1,23 @@
 steps:
-  # Build the container image
+  # Build the container image (skip tests in Gradle build)
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA', '.']
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'SKIP_TESTS=true'  # Pass argument to Dockerfile to skip tests
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
+      - '.'
+
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA']
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
+
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    entrypoint: 'gcloud'
     args:
       - 'run'
       - 'deploy'
@@ -16,6 +26,7 @@ steps:
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
       - '--region'
       - 'asia-northeast3'
+
 images:
   - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
 

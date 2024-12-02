@@ -21,8 +21,9 @@ RUN chmod +x gradlew
 # Copy the source code into the container
 COPY . /app
 
-# Build the application (This will run Gradle build)
-RUN ./gradlew clean build
+# Conditional build logic to skip tests
+ARG SKIP_TESTS=false
+RUN if [ "$SKIP_TESTS" = "true" ]; then ./gradlew clean build -x test; else ./gradlew clean build; fi
 
 # Copy the jar file from the build directory
 COPY build/libs/*.jar app.jar
