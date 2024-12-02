@@ -1,34 +1,20 @@
 steps:
-  # Docker 이미지를 빌드
+  # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'  # Docker 이미지 이름
-      - '.'  # Dockerfile이 위치한 디렉토리 (현재 디렉토리)
-    id: 'Build Docker image'
-
-  # Docker 이미지를 GCR에 푸시
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA', '.']
+  # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'
-    id: 'Push Docker image to GCR'
-
-  # Cloud Run에 배포
-  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['push', 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA']
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'tmp-be-app'
+      - 'tripmate-be'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'
-      - '--platform'
-      - 'managed'
+      - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
       - '--region'
-      - 'us-central1'
-      - '--allow-unauthenticated'
-    id: 'Deploy to Cloud Run'
-
+      - 'asia-northeast3'
 images:
-  - 'gcr.io/$PROJECT_ID/tmp-be-app:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
