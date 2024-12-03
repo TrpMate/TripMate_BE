@@ -8,6 +8,11 @@ steps:
       - '-t'
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
       - '.'
+    env:
+      - 'data.host=${_DATA_HOST}'
+      - 'data.username=${_DATA_USER_NAME}'
+      - 'data.userpassword=${_DATA_USER_PASSWORD}'
+      - 'ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
