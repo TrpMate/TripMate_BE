@@ -4,7 +4,7 @@ server:
 spring:
   profiles:
     group:
-      local: db, jwt, mail, oauth, api, build, swagger
+      local: db, jwt, mail, oauth, api, swagger
     active: local
   application:
     name: trip-mate

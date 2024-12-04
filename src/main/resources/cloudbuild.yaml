@@ -1,17 +1,27 @@
 steps:
   # Step 1: Gradle 빌드 (테스트 제외)
-  - name: 'gcr.io/cloud-builders/gradle'
-    args: ['build', '-x', 'test']  # '-x test'로 테스트 제외
-    env:  # Gradle 빌드 단계에서 필요한 환경 변수
-      - 'DATA_HOST=${_DATA_HOST}'
-      - 'DATA_USERNAME=${_DATA_USER_NAME}'
-      - 'DATA_USERPASSWORD=${_DATA_USER_PASSWORD}'
+  - name: 'gradle:8-jdk17'
+    entrypoint: 'gradle'
+    args: ['build', '-x', 'test']  # 테스트 제외하고 빌드 실행
+    env:
+      - 'JAVA_HOME=/usr/lib/jvm/java-17-openjdk'
+      - 'data.host=${_DATA_HOST}'
+      - 'data.username=${_DATA_USER_NAME}'
+      - 'data.userpassword=${_DATA_USER_PASSWORD}'
       - 'ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
   # Step 2: Docker 이미지 빌드
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
+      - '--build-arg'
+      - 'data.host=${_DATA_HOST}'  # Docker 빌드에 필요한 ARG 전달
+      - '--build-arg'
+      - 'data.username=${_DATA_USER_NAME}'
+      - '--build-arg'
+      - 'data.userpassword=${_DATA_USER_PASSWORD}'
+      - '--build-arg'
+      - 'ENCRYPT_KEY=${_ENCRYPT_KEY}'
       - '-t'
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'  # Docker 이미지 태깅
       - '.'
@@ -34,7 +44,7 @@ steps:
       - '--region'
       - 'asia-northeast3'  # 배포할 리전
       - '--set-env-vars'
-      - 'DATA_HOST=${_DATA_HOST},DATA_USERNAME=${_DATA_USER_NAME},DATA_USERPASSWORD=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
+      - 'data.host=${_DATA_HOST},data.username=${_DATA_USER_NAME},data.userpassword=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
 images:
   - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
