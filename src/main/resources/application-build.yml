@@ -1,36 +1,38 @@
 steps:
-  # Build the container image (skip tests in Gradle build)
+  # Step 1: Gradle 빌드 (테스트 제외)
+  - name: 'gcr.io/cloud-builders/gradle'
+    args: ['build', '-x', 'test']  # '-x test'로 테스트 제외
+    env:  # Gradle 빌드 단계에서 필요한 환경 변수
+      - 'DATA_HOST=${_DATA_HOST}'
+      - 'DATA_USERNAME=${_DATA_USER_NAME}'
+      - 'DATA_USERPASSWORD=${_DATA_USER_PASSWORD}'
+      - 'ENCRYPT_KEY=${_ENCRYPT_KEY}'
+
+  # Step 2: Docker 이미지 빌드
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
-      - '--build-arg'
-      - 'SKIP_TESTS=true'  # Pass argument to Dockerfile to skip tests
       - '-t'
-      - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
+      - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'  # Docker 이미지 태깅
       - '.'
-    env:
-      - 'data.host=${_DATA_HOST}'
-      - 'data.username=${_DATA_USER_NAME}'
-      - 'data.userpassword=${_DATA_USER_PASSWORD}'
-      - 'ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
-  # Push the container image to Container Registry
+  # Step 3: Docker 이미지 푸시
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
 
-  # Deploy container image to Cloud Run
+  # Step 4: Cloud Run 배포
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
       - 'run'
       - 'deploy'
-      - 'tripmate-be'
+      - 'tripmate-be'  # 서비스 이름
       - '--image'
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
       - '--region'
-      - 'asia-northeast3'
+      - 'asia-northeast3'  # 배포할 리전
       - '--set-env-vars'
       - 'DATA_HOST=${_DATA_HOST},DATA_USERNAME=${_DATA_USER_NAME},DATA_USERPASSWORD=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
