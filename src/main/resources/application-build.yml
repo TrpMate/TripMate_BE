@@ -31,6 +31,8 @@ steps:
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
       - '--region'
       - 'asia-northeast3'
+      - '--set-env-vars'
+      - 'DATA_HOST=${_DATA_HOST},DATA_USERNAME=${_DATA_USER_NAME},DATA_USERPASSWORD=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
 images:
   - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'

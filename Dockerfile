@@ -4,29 +4,23 @@ FROM openjdk:17-jdk-slim
 # Set the working directory
 WORKDIR /app
 
+# Accept build argument to skip tests
+ARG SKIP_TESTS=false
+
 # Copy the Gradle wrapper files
 COPY gradlew gradlew.bat /app/
 COPY gradle /app/gradle
 
-# Install dos2unix to convert line endings
+# Install dos2unix to convert line endings (in case gradlew has Windows line endings)
 RUN apt-get update && apt-get install -y dos2unix && \
-    dos2unix gradlew && chmod +x gradlew
+    dos2unix gradlew && \
+    chmod +x gradlew
 
 # Copy the source code into the container
 COPY . /app
 
-# Install dependencies (including Gradle)
-RUN apt-get install -y wget unzip && \
-    wget https://services.gradle.org/distributions/gradle-8.8-bin.zip -P /tmp && \
-    unzip /tmp/gradle-8.8-bin.zip -d /opt && \
-    rm /tmp/gradle-8.8-bin.zip && \
-    ln -s /opt/gradle-8.8/bin/gradle /usr/bin/gradle
-
-# Install file command (optional)
-RUN apt-get install -y file
-
-# Use gradle wrapper to build the application
-RUN ./gradlew build -x test
+# Use gradle wrapper to build the application (Gradle will be downloaded by gradlew)
+RUN ./gradlew build ${SKIP_TESTS} -x test
 
 # Copy the jar file from the build directory
 COPY build/libs/*.jar app.jar
