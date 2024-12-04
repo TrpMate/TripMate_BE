@@ -1,4 +1,4 @@
-package com.project.tripmate.config.commons;
+package com.project.tripmate.global.commons;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultSupertypeSerializer")
 public class QBase extends EntityPathBase<Base> {
 
-    private static final long serialVersionUID = -275499999L;
+    private static final long serialVersionUID = 1029970272L;
 
     public static final QBase base = new QBase("base");
 

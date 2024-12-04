@@ -18,8 +18,8 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("Secure-Login Swagger")
-                .description("Secure Login 관련 기능에 관한 REST API")
-                .version("1.0.0");
+                .title("TripMate Swagger")
+                .description("TripMate 관련 기능에 관한 REST API")
+                .version("v1.0.0");
     }
 }

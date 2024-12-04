@@ -9,11 +9,13 @@ import com.project.tripmate.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,14 +59,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // HTTP 요청에 대한 인가 규칙 설정
                 .authorizeHttpRequests(auth -> auth
-                        // 로그인과 회원가입 페이지는 누구나 접근 가능
-                        .requestMatchers("/login", "/auth/login", "/user/signup", "/user/verify/**", "/tourAPI/**",
-                                "/course/**").permitAll() // 로그인과 회원가입은 누구나 접근 가능
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+                        .requestMatchers("/login", "/auth/login", "/user/signup", "/user/verify/**", "/tourAPI/**").permitAll() // 로그인과 회원가입은 누구나 접근 가능
+                        .requestMatchers(HttpMethod.GET, "/course/**").permitAll()
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
                 // 폼 로그인 설정
-                .formLogin(form -> form
-                        .permitAll() // 로그인 페이지는 누구나 접근 가능
+                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll // 로그인 페이지는 누구나 접근 가능
                 )
                 // OAuth 로그인 설정
                 .oauth2Login(oauth2 -> oauth2
@@ -85,7 +86,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:9090")); // 허용할 도메인 설정
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:3000", "http://localhost:9090", "http://tripmate-be.shop")); // 허용할 도메인 설정
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드 설정
         configuration.setAllowedHeaders(List.of("*")); // 허용할 헤더 설정
         configuration.setAllowCredentials(true); // 쿠키 허용 여부 설정
