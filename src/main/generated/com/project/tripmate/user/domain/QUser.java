@@ -39,6 +39,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath mailVerificationToken = createString("mailVerificationToken");
 
+    public final StringPath nickname = createString("nickname");
+
     public final BooleanPath onlineStatus = createBoolean("onlineStatus");
 
     public final StringPath password = createString("password");
