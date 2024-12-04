@@ -4,7 +4,6 @@ steps:
     entrypoint: 'gradle'
     args: ['build', '-x', 'test']  # 테스트 제외하고 빌드 실행
     env:
-      - 'JAVA_HOME=/usr/lib/jvm/java-17-openjdk'
       - 'data.host=${_DATA_HOST}'
       - 'data.username=${_DATA_USER_NAME}'
       - 'data.userpassword=${_DATA_USER_PASSWORD}'
