@@ -15,7 +15,12 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of("http://localhost:3000", "http://localhost:9090", "http://tripmate-be.shop", "https://my-trip-mate.vercel.app"));
+                List.of(
+                        "http://localhost:3000",        // 프론트 로컬
+                        "https://my-trip-mate.vercel.app",  // 프론트 배포
+                        "http://tripmate-be.shop"      // 백엔드 배포
+                )
+        );
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         configuration.setAllowCredentials(true); // 쿠키 허용 여부 설정
@@ -26,3 +31,4 @@ public class CorsConfig {
         return source;
     }
 }
+

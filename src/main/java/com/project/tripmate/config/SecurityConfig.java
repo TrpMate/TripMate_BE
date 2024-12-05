@@ -49,11 +49,13 @@ public class SecurityConfig {
     @Bean // SecurityFilterChain 설정 (스프링 부트 3부터는 FilterChain 방식 사용)
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource())) // CORS 설정 적용
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
-                        .requestMatchers("/login", "/auth/login", "/user/signup", "/user/verify/**", "/tourAPI/**").permitAll()
+                        .requestMatchers("/login", "/auth/login", "/user/signup", "/user/verify/**", "/tourAPI/**")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET, "/course/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -66,7 +68,6 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                 )
-                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource())) // CORS 설정 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
 
