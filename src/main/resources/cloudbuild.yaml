@@ -41,7 +41,7 @@ steps:
       - '--image'
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
       - '--region'
-      - 'asia-northeast3'  # 배포할 리전
+      - 'us-central1'  # 배포할 리전
       - '--set-env-vars'
       - 'data.host=${_DATA_HOST},data.username=${_DATA_USER_NAME},data.userpassword=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
