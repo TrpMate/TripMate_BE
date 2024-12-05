@@ -40,10 +40,12 @@ steps:
       - 'tripmate-be'  # 서비스 이름
       - '--image'
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
+      - '--port'
+      - '9090'  # 포트를 명시적으로 9090으로 설정
       - '--region'
       - 'us-central1'  # 배포할 리전
       - '--set-env-vars'
-      - 'data.host=${_DATA_HOST},data.username=${_DATA_USER_NAME},data.userpassword=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY},PORT=9090'
+      - 'data.host=${_DATA_HOST},data.username=${_DATA_USER_NAME},data.userpassword=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
 
 images:
   - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
