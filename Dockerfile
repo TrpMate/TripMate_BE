@@ -36,5 +36,8 @@ ENV data.username=${DATA_USERNAME}
 ENV data.userpassword=${DATA_USERPASSWORD}
 ENV ENCRYPT_KEY=${ENCRYPT_KEY}
 
+# 추가: Cloud Run에서 사용되는 PORT 환경 변수 설정
+ENV PORT=9090
+
 # 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "/app/tripmate-be.jar"]

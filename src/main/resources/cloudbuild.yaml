@@ -43,7 +43,7 @@ steps:
       - '--region'
       - 'us-central1'  # 배포할 리전
       - '--set-env-vars'
-      - 'data.host=${_DATA_HOST},data.username=${_DATA_USER_NAME},data.userpassword=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
+      - 'data.host=${_DATA_HOST},data.username=${_DATA_USER_NAME},data.userpassword=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY},PORT=9090'
 
 images:
   - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
