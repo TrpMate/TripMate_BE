@@ -1,6 +1,6 @@
 package com.project.tripmate.tourAPI.controller;
 
-import com.project.tripmate.global.jsonResponse.CourseDayJsonResponse;
+import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.tourAPI.domain.CourseDay;
 import com.project.tripmate.tourAPI.dto.CourseDayDTO;
 import com.project.tripmate.tourAPI.service.CourseDayService;
@@ -21,77 +21,54 @@ public class CourseDayController {
     private final CourseDayService courseDayService;
 
     @PostMapping
-    public ResponseEntity<CourseDayJsonResponse> createCourseDay(@RequestBody CourseDayDTO courseDayDTO) {
-        CourseDay courseDay = courseDayService
-                .createCourseDay(courseDayDTO.getCourseId(), courseDayDTO.getDayNum(), courseDayDTO.getDayDate());
-
-        if (courseDay != null) {
-            CourseDayDTO createdCourseDayDTO = convertToDTO(courseDay);
-            CourseDayJsonResponse response = new CourseDayJsonResponse(HttpStatus.CREATED.value(),
-                    "Course day created successfully", createdCourseDayDTO);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new CourseDayJsonResponse(HttpStatus.BAD_REQUEST.value(), "Course not found", null));
-        }
+    public ResponseEntity<JsonResponse<CourseDayDTO>> createCourseDay(@RequestBody CourseDayDTO courseDayDTO) {
+        CourseDay courseDay = courseDayService.createCourseDay(courseDayDTO.getCourseId(), courseDayDTO.getDayNum(), courseDayDTO.getDayDate());
+        return courseDay != null ? buildResponse(HttpStatus.CREATED, "Course day created successfully", convertToDTO(courseDay))
+                : buildErrorResponse(HttpStatus.BAD_REQUEST, "Course not found");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CourseDayJsonResponse> getCourseDayById(@PathVariable Long id) {
-        Optional<CourseDay> courseDay = courseDayService.getCourseDayById(id);
-
-        if (courseDay.isPresent()) {
-            CourseDayDTO courseDayDTO = convertToDTO(courseDay.get());
-            CourseDayJsonResponse response = new CourseDayJsonResponse(HttpStatus.OK.value(), "Course day found",
-                    courseDayDTO);
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new CourseDayJsonResponse(HttpStatus.NOT_FOUND.value(), "Course day not found", null));
-        }
+    public ResponseEntity<JsonResponse<CourseDayDTO>> getCourseDayById(@PathVariable Long id) {
+        return courseDayService.getCourseDayById(id)
+                .map(courseDay -> buildResponse(HttpStatus.OK, "Course day found", convertToDTO(courseDay)))
+                .orElseGet(() -> buildErrorResponse(HttpStatus.NOT_FOUND, "Course day not found"));
     }
 
     @GetMapping
-    public ResponseEntity<CourseDayJsonResponse> getAllCourseDays() {
-        List<CourseDay> courseDays = courseDayService.getAllCourseDays();
-        List<CourseDayDTO> courseDayDTOs = courseDays.stream()
+    public ResponseEntity<JsonResponse<List<CourseDayDTO>>> getAllCourseDays() {
+        List<CourseDayDTO> courseDayDTOs = courseDayService.getAllCourseDays().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-        CourseDayJsonResponse response = new CourseDayJsonResponse(HttpStatus.OK.value(),
-                "Course days retrieved successfully", (CourseDayDTO) courseDayDTOs);
-        return ResponseEntity.ok(response);
+        return buildResponse(HttpStatus.OK, "Course days retrieved successfully", courseDayDTOs);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CourseDayJsonResponse> updateCourseDay(@PathVariable Long id,
-            @RequestBody CourseDayDTO courseDayDTO) {
-        CourseDay updatedCourseDay = courseDayService
-                .updateCourseDay(id, courseDayDTO.getDayNum(), courseDayDTO.getDayDate());
-
-        if (updatedCourseDay != null) {
-            CourseDayDTO updatedCourseDayDTO = convertToDTO(updatedCourseDay);
-            CourseDayJsonResponse response = new CourseDayJsonResponse(HttpStatus.OK.value(),
-                    "Course day updated successfully", updatedCourseDayDTO);
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new CourseDayJsonResponse(HttpStatus.NOT_FOUND.value(), "Course day not found", null));
-        }
+    public ResponseEntity<JsonResponse<CourseDayDTO>> updateCourseDay(@PathVariable Long id, @RequestBody CourseDayDTO courseDayDTO) {
+        CourseDay updatedCourseDay = courseDayService.updateCourseDay(id, courseDayDTO.getDayNum(), courseDayDTO.getDayDate());
+        return updatedCourseDay != null ? buildResponse(HttpStatus.OK, "Course day updated successfully", convertToDTO(updatedCourseDay))
+                : buildErrorResponse(HttpStatus.NOT_FOUND, "Course day not found");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CourseDayJsonResponse> deleteCourseDay(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCourseDay(@PathVariable Long id) {
         courseDayService.deleteCourseDay(id);
         return ResponseEntity.noContent().build();
     }
 
+    // 공통 응답 빌더
+    private <T> ResponseEntity<JsonResponse<T>> buildResponse(HttpStatus status, String message, T data) {
+        JsonResponse<T> response = new JsonResponse<>(status.value(), message, data);
+        return new ResponseEntity<>(response, status);
+    }
+
+    // 공통 오류 응답 빌더
+    private <T> ResponseEntity<JsonResponse<T>> buildErrorResponse(HttpStatus status, String message) {
+        JsonResponse<T> response = new JsonResponse<>(status.value(), message, null);
+        return new ResponseEntity<>(response, status);
+    }
+
     // DTO 변환 메서드
     private CourseDayDTO convertToDTO(CourseDay courseDay) {
-        return new CourseDayDTO(
-                courseDay.getId(),
-                courseDay.getCourse().getId(),
-                courseDay.getDayNum(),
-                courseDay.getDayDate()
-        );
+        return new CourseDayDTO(courseDay.getId(), courseDay.getCourse().getId(), courseDay.getDayNum(), courseDay.getDayDate());
     }
 }

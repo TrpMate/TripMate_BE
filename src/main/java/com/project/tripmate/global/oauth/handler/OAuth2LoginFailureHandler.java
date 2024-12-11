@@ -1,6 +1,6 @@
 package com.project.tripmate.global.oauth.handler;
 
-import com.project.tripmate.global.jsonResponse.UserJsonResponse;
+import com.project.tripmate.global.JsonResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -16,7 +16,7 @@ public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHan
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
-        UserJsonResponse userJsonResponse = new UserJsonResponse(
+        JsonResponse jsonResponse = new JsonResponse(
                 HttpServletResponse.SC_UNAUTHORIZED,
                 "로그인 실패",
                 null
@@ -24,6 +24,6 @@ public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHan
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().write(userJsonResponse.toString());
+        response.getWriter().write(jsonResponse.toString());
     }
 }

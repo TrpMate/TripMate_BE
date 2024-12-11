@@ -1,6 +1,6 @@
 package com.project.tripmate.global.oauth.handler;
 
-import com.project.tripmate.global.jsonResponse.UserJsonResponse;
+import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.global.jwt.JwtTokenProvider;
 import com.project.tripmate.global.oauth.domain.CustomOAuth2User;
 import com.project.tripmate.global.oauth.service.CustomOAuth2UserService;
@@ -52,7 +52,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         response.setHeader("Refresh-Token", refreshToken);
 
         UserResponseDTO userResponseDTO = UserResponseDTO.from(user); // UserResponseDTO로 변환
-        UserJsonResponse userJsonResponse = new UserJsonResponse(
+        JsonResponse jsonResponse = new JsonResponse(
                 HttpServletResponse.SC_OK,
                 "로그인 성공",
                 userResponseDTO
@@ -61,6 +61,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        response.getWriter().write(userJsonResponse.toJson());
+        response.getWriter().write(jsonResponse.toJson());
     }
 }

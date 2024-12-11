@@ -1,15 +1,14 @@
 package com.project.tripmate.tourAPI.controller;
 
+import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.tourAPI.domain.Course;
 import com.project.tripmate.tourAPI.dto.CourseDTO;
-import com.project.tripmate.global.jsonResponse.CourseJsonResponse;
 import com.project.tripmate.tourAPI.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,58 +22,55 @@ public class CourseController {
 
     // 코스 생성
     @PostMapping
-    public ResponseEntity<CourseJsonResponse> createCourse(@RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<JsonResponse<CourseDTO>> createCourse(@RequestBody CourseDTO courseDTO) {
         courseService.createCourse(courseDTO);
-        CourseJsonResponse response = new CourseJsonResponse(HttpStatus.CREATED.value(), "Course created successfully", courseDTO);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return buildResponse(HttpStatus.CREATED, "Course created successfully", courseDTO);
     }
 
     // 코스 조회
     @GetMapping("/{id}")
-    public ResponseEntity<CourseJsonResponse> getCourseById(@PathVariable Long id) {
-        Optional<Course> course = courseService.getCourseById(id);
-        if (course.isPresent()) {
-            CourseDTO courseDTO = convertToDTO(course.get());
-            CourseJsonResponse response = new CourseJsonResponse(HttpStatus.OK.value(), "Course found", courseDTO);
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new CourseJsonResponse(HttpStatus.NOT_FOUND.value(), "Course not found", null));
-        }
+    public ResponseEntity<JsonResponse<CourseDTO>> getCourseById(@PathVariable Long id) {
+        return courseService.getCourseById(id)
+                .map(course -> buildResponse(HttpStatus.OK, "Course found", convertToDTO(course)))
+                .orElseGet(() -> buildErrorResponse(HttpStatus.NOT_FOUND, "Course not found"));
     }
 
     // 코스 검색
     @GetMapping
-    public ResponseEntity<CourseJsonResponse> getAllCourses() {
-        List<Course> courses = courseService.getAllCourses();
-        List<CourseDTO> courseDTOs = courses.stream()
+    public ResponseEntity<JsonResponse<List<CourseDTO>>> getAllCourses() {
+        List<CourseDTO> courseDTOs = courseService.getAllCourses().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-        CourseJsonResponse response = new CourseJsonResponse(HttpStatus.OK.value(), "Courses retrieved successfully", null);
-        return ResponseEntity.ok(response);
+        return buildResponse(HttpStatus.OK, "Courses retrieved successfully", courseDTOs);
     }
 
     // 코스 업데이트
     @PutMapping("/{id}")
-    public ResponseEntity<CourseJsonResponse> updateCourse(@PathVariable Long id,
-                                                           @RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<JsonResponse<CourseDTO>> updateCourse(@PathVariable Long id,
+            @RequestBody CourseDTO courseDTO) {
         Course updatedCourse = courseService.updateCourse(id, courseDTO.getCourseName(), courseDTO.isPublic(), courseDTO.getStartDate(), courseDTO.getEndDate());
-        if (updatedCourse != null) {
-            CourseDTO updatedCourseDTO = convertToDTO(updatedCourse);
-            CourseJsonResponse response = new CourseJsonResponse(HttpStatus.OK.value(), "Course updated successfully", updatedCourseDTO);
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new CourseJsonResponse(HttpStatus.NOT_FOUND.value(), "Course not found", null));
-        }
+        return updatedCourse != null
+                ? buildResponse(HttpStatus.OK, "Course updated successfully", convertToDTO(updatedCourse))
+                : buildErrorResponse(HttpStatus.NOT_FOUND, "Course not found");
     }
 
     // 코스 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<CourseJsonResponse> deleteCourse(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
-        CourseJsonResponse response = new CourseJsonResponse(HttpStatus.NO_CONTENT.value(), "Course deleted successfully", null);
         return ResponseEntity.noContent().build();
+    }
+
+    // 공통 응답 빌더
+    private <T> ResponseEntity<JsonResponse<T>> buildResponse(HttpStatus status, String message, T data) {
+        JsonResponse<T> response = new JsonResponse<>(status.value(), message, data);
+        return new ResponseEntity<>(response, status);
+    }
+
+    // 공통 오류 응답 빌더
+    private <T> ResponseEntity<JsonResponse<T>> buildErrorResponse(HttpStatus status, String message) {
+        JsonResponse<T> response = new JsonResponse<>(status.value(), message, null);
+        return new ResponseEntity<>(response, status);
     }
 
     // DTO 변환 메서드
@@ -90,4 +86,3 @@ public class CourseController {
         );
     }
 }
-
