@@ -1,5 +1,7 @@
 package com.project.tripmate.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -7,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class UserRequestDTO {
 
     @NotBlank(message = "사용자 이름을 입력해주세요")
@@ -24,6 +25,19 @@ public class UserRequestDTO {
     @NotBlank(message = "이메일을 입력해주세요")
     @Email(message = "올바른 이메일 형식이 아닙니다")
     private final String email;
+
+    @JsonCreator
+    public UserRequestDTO(
+            @JsonProperty("username") String username,
+            @JsonProperty("password") String password,
+            @JsonProperty("nickname") String nickname,
+            @JsonProperty("email") String email
+    ) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.email = email;
+    }
 
     @Override
     public String toString() {

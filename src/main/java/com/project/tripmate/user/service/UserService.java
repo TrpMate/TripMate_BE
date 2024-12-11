@@ -1,5 +1,7 @@
 package com.project.tripmate.user.service;
 
+import com.project.tripmate.global.exception.DuplicateEmailException;
+import com.project.tripmate.global.exception.UserNotFoundException;
 import com.project.tripmate.global.mail.MailService;
 import com.project.tripmate.user.domain.User;
 import com.project.tripmate.user.dto.UserRequestDTO;
@@ -28,25 +30,13 @@ public class UserService {
         validateEmail(userRequestDTO.getEmail()); // 이메일 중복 체크
 
         String encodedPassword = encodePassword(userRequestDTO.getPassword());
-
         String verificationToken = UUID.randomUUID().toString();
 
-        User user = User.builder()
-                .username(userRequestDTO.getUsername())
-                .nickname(userRequestDTO.getNickname())
-                .password(encodedPassword)
-                .email(userRequestDTO.getEmail())
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
-                .accountEnabled(false)
-                .mailVerificationToken(verificationToken)
-                .build();
+        User user = createUser(userRequestDTO, encodedPassword, verificationToken);
 
         sendEmail(user.getEmail(), verificationToken, "회원가입 이메일 인증");
 
         userRepository.save(user);
-
         return UserResponseDTO.from(user);
     }
 
@@ -60,7 +50,8 @@ public class UserService {
 
     // 회원 정보 조회
     public UserResponseDTO getUserById(Long userId) {
-        User user = findUserById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("해당 ID를 가진 사용자가 존재하지 않습니다."));
         return UserResponseDTO.from(user);
     }
 
@@ -88,10 +79,26 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
+
+    // 사용자 생성 메서드
+    private User createUser(UserRequestDTO userRequestDTO, String encodedPassword, String verificationToken) {
+        return User.builder()
+                .username(userRequestDTO.getUsername())
+                .nickname(userRequestDTO.getNickname())
+                .password(encodedPassword)
+                .email(userRequestDTO.getEmail())
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .accountEnabled(false)
+                .mailVerificationToken(verificationToken)
+                .build();
+    }
+
     // 이메일 중복 체크 메서드
     private void validateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalStateException("이미 등록된 이메일입니다.");
+            throw new DuplicateEmailException("이미 등록된 이메일입니다.");
         }
     }
 
@@ -107,12 +114,6 @@ public class UserService {
                 .orElseThrow(() -> new IllegalStateException("유효한 토큰이 없습니다."));
     }
 
-    // 사용자 ID를 사용하여 사용자 조회
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
-    }
-
     // 비밀번호 암호화 메서드
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
@@ -122,7 +123,7 @@ public class UserService {
     // 온라인 상태 업데이트
     public void setOnlineStatus(String email, boolean status) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일을 가진 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 이메일을 가진 사용자를 찾을 수 없습니다."));
         user.setOnlineStatus(status);
         userRepository.save(user);
     }

@@ -1,8 +1,8 @@
 package com.project.tripmate.tourAPI.controller;
 
+import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.tourAPI.domain.CourseUser;
 import com.project.tripmate.tourAPI.dto.CourseUserDTO;
-import com.project.tripmate.global.jsonResponse.CourseUserJsonResponse;
 import com.project.tripmate.tourAPI.service.CourseUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,58 +25,66 @@ public class CourseUserController {
     }
 
     @PostMapping
-    public ResponseEntity<CourseUserJsonResponse> createCourseUser(@RequestParam Long courseId,
+    public ResponseEntity<JsonResponse<CourseUserDTO>> createCourseUser(@RequestParam Long courseId,
                                                                    @RequestParam Long userId) {
         CourseUser courseUser = courseUserService.createCourseUser(courseId, userId);
         if (courseUser != null) {
             CourseUserDTO courseUserDTO = convertToDTO(courseUser);
-            CourseUserJsonResponse response = new CourseUserJsonResponse(HttpStatus.CREATED.value(), "Course user created successfully", courseUserDTO);
+            JsonResponse<CourseUserDTO> response = new JsonResponse<>(HttpStatus.CREATED.value(),
+                    "Course user created successfully", courseUserDTO);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CourseUserJsonResponse(HttpStatus.BAD_REQUEST.value(), "Course or User not found", null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new JsonResponse<>(HttpStatus.BAD_REQUEST.value(), "Course or User not found", null));
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CourseUserJsonResponse> getCourseUserById(@PathVariable Long id) {
+    public ResponseEntity<JsonResponse<CourseUserDTO>> getCourseUserById(@PathVariable Long id) {
         Optional<CourseUser> courseUser = courseUserService.getCourseUserById(id);
         if (courseUser.isPresent()) {
             CourseUserDTO courseUserDTO = convertToDTO(courseUser.get());
-            CourseUserJsonResponse response = new CourseUserJsonResponse(HttpStatus.OK.value(), "Course user found", courseUserDTO);
+            JsonResponse<CourseUserDTO> response = new JsonResponse<>(HttpStatus.OK.value(), "Course user found",
+                    courseUserDTO);
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CourseUserJsonResponse(HttpStatus.NOT_FOUND.value(), "Course user not found", null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new JsonResponse<>(HttpStatus.NOT_FOUND.value(), "Course user not found", null));
         }
     }
 
     @GetMapping
-    public ResponseEntity<CourseUserJsonResponse> getAllCourseUsers() {
+    public ResponseEntity<JsonResponse<CourseUserDTO>> getAllCourseUsers() {
         List<CourseUser> courseUsers = courseUserService.getAllCourseUsers();
         List<CourseUserDTO> courseUserDTOs = courseUsers.stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        CourseUserJsonResponse response = new CourseUserJsonResponse(HttpStatus.OK.value(), "Course users retrieved successfully", null);
+                .toList();
+        JsonResponse<CourseUserDTO> response = new JsonResponse<>(HttpStatus.OK.value(),
+                "Course users retrieved successfully", null);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CourseUserJsonResponse> updateCourseUser(@PathVariable Long id,
+    public ResponseEntity<JsonResponse<CourseUserDTO>> updateCourseUser(@PathVariable Long id,
                                                                    @RequestParam Long courseId,
                                                                    @RequestParam Long userId) {
         CourseUser updatedCourseUser = courseUserService.updateCourseUser(id, courseId, userId);
         if (updatedCourseUser != null) {
             CourseUserDTO courseUserDTO = convertToDTO(updatedCourseUser);
-            CourseUserJsonResponse response = new CourseUserJsonResponse(HttpStatus.OK.value(), "Course user updated successfully", courseUserDTO);
+            JsonResponse<CourseUserDTO> response = new JsonResponse<>(HttpStatus.OK.value(),
+                    "Course user updated successfully", courseUserDTO);
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CourseUserJsonResponse(HttpStatus.NOT_FOUND.value(), "Course user not found", null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new JsonResponse<>(HttpStatus.NOT_FOUND.value(), "Course user not found", null));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CourseUserJsonResponse> deleteCourseUser(@PathVariable Long id) {
+    public ResponseEntity<JsonResponse<CourseUserDTO>> deleteCourseUser(@PathVariable Long id) {
         courseUserService.deleteCourseUser(id);
-        CourseUserJsonResponse response = new CourseUserJsonResponse(HttpStatus.NO_CONTENT.value(), "Course user deleted successfully", null);
+        JsonResponse<CourseUserDTO> response = new JsonResponse<>(HttpStatus.NO_CONTENT.value(),
+                "Course user deleted successfully", null);
         return ResponseEntity.noContent().build();
     }
 

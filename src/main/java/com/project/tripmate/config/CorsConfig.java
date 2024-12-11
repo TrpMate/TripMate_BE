@@ -17,6 +17,7 @@ public class CorsConfig {
         configuration.setAllowedOrigins(
                 List.of(
                         "http://localhost:3000",        // 프론트 로컬
+                        "http://localhost:9090",        // 백엔드 로컬
                         "https://my-trip-mate.vercel.app",  // 프론트 배포
                         "http://tripmate-be.shop"      // 백엔드 배포
                 )
