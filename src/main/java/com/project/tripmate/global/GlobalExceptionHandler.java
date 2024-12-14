@@ -41,20 +41,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
     }
 
-    // 이메일 전송 관련 예외 처리 (MessagingException)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "500", description = "이메일 전송에 실패했습니다.")
-    })
-    @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<JsonResponse> handleMessagingException(MessagingException ex) {
-        JsonResponse response = new JsonResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getMessage(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
-
     // 모든 예외 처리 (예상하지 못한 예외 처리)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "500", description = "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")

@@ -68,26 +68,6 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    // 이메일 인증
-    @GetMapping("/verify/{token}")
-    public ResponseEntity<JsonResponse<UserResponseDTO>> verifyEmail(@PathVariable String token) {
-        UserResponseDTO userResponseDTO = userService.verifyEmail(token);
-        JsonResponse<UserResponseDTO> response = new JsonResponse<>(
-                HttpStatus.OK.value(),
-                "이메일 인증이 완료되었습니다.",
-                userResponseDTO);
-        return ResponseEntity.ok(response);
-    }
-
-    // 사용자를 찾을 수 없을 때 발생하는 예외 처리
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<JsonResponse<UserResponseDTO>> handleUserNotFoundException(UserNotFoundException ex) {
-        JsonResponse<UserResponseDTO> response = new JsonResponse<>(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                null);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
 
     // 이미 존재하는 이메일로 회원가입을 시도할 때 발생하는 예외 처리
     @ApiResponses(value = {
@@ -101,5 +81,15 @@ public class UserController {
                 null
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    // 사용자를 찾을 수 없을 때 발생하는 예외 처리
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<JsonResponse<UserResponseDTO>> handleUserNotFoundException(UserNotFoundException ex) {
+        JsonResponse<UserResponseDTO> response = new JsonResponse<>(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }
