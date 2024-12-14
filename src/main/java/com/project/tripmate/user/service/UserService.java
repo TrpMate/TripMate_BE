@@ -10,7 +10,6 @@ import com.project.tripmate.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,20 +27,16 @@ public class UserService {
     // 회원 가입
     public UserResponseDTO signUp(UserRequestDTO userRequestDTO) throws MessagingException {
         validateEmail(userRequestDTO.getEmail()); // 이메일 중복 체크
-
         String encodedPassword = encodePassword(userRequestDTO.getPassword());
         String verificationToken = UUID.randomUUID().toString();
-
         User user = createUser(userRequestDTO, encodedPassword, verificationToken);
-
         sendEmail(user.getEmail(), verificationToken, "회원가입 이메일 인증");
-
         userRepository.save(user);
         return UserResponseDTO.from(user);
     }
 
     // 이메일 검증
-    public UserResponseDTO verifyEmail(String token) {
+    public UserResponseDTO verifyEmailForUser(String token) {
         User user = findUserByVerificationToken(token);
         user.enableAccount(); // 엔티티 메서드 사용
         userRepository.save(user);
@@ -104,8 +99,7 @@ public class UserService {
 
     // 이메일 전송 메서드
     private void sendEmail(String email, String verificationToken, String subject) throws MessagingException {
-        String verificationUrl = "http://tripmate-be.shop/user/verify/" + verificationToken;
-        mailService.sendEmail(email, verificationUrl, subject);
+        mailService.sendEmail(email, verificationToken, subject);
     }
 
     // 토큰을 사용하여 사용자 조회
