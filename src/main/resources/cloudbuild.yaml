@@ -45,7 +45,7 @@ steps:
           -e data.host=${_DATA_HOST} \
           -e data.username=${_DATA_USER_NAME} \
           -e data.userpassword=${_DATA_USER_PASSWORD} \
-          -e ENCRYPT_KEY=${_ENCRYPT_KEY} \
+          -e ENCRYPT_KEY=\"${_ENCRYPT_KEY}\" \
           gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA
         "
 
