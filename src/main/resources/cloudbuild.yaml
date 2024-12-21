@@ -37,19 +37,29 @@ steps:
     args:
       - '-c'
       - |
-        gcloud compute ssh tmp-instance --zone us-central1-a \
-        --ssh-key-file=/builder/home/.ssh/google_compute_engine \
-        --command '
-        docker pull gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA &&
-        docker stop tripmate-be || true &&
-        docker rm tripmate-be || true &&
-        docker run -d --name tripmate-be -p 9090:9090 \
-          -e data.host=${_DATA_HOST} \
-          -e data.username=${_DATA_USER_NAME} \
-          -e data.userpassword=${_DATA_USER_PASSWORD} \
-          -e ENCRYPT_KEY="${_ENCRYPT_KEY}" \
-          gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA
-        '
+        # 디렉토리 생성
+        mkdir -p /builder/home/.ssh
+        
+        # SSH 키 생성
+        ssh-keygen -t rsa -b 2048 -f /builder/home/.ssh/google_compute_engine -N ""
+        
+        # SSH 공개 키를 메타데이터에 추가 (gcloud 명령어로)
+        gcloud compute instances add-metadata tmp-instance \
+          --metadata ssh-keys="chanmi125128:$(cat /builder/home/.ssh/google_compute_engine.pub)" \
+          --zone us-central1-a
+        
+        # Docker 실행 명령
+        gcloud compute ssh tmp-instance --zone us-central1-a --command "
+          docker pull gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA &&
+          docker stop tripmate-be || true &&
+          docker rm tripmate-be || true &&
+          docker run -d --name tripmate-be -p 9090:9090 \
+            -e data.host=${_DATA_HOST} \
+            -e data.username=${_DATA_USER_NAME} \
+            -e data.userpassword=${_DATA_USER_PASSWORD} \
+            -e ENCRYPT_KEY=\"${_ENCRYPT_KEY}\" \
+            gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA
+        "
 
 
 images:
