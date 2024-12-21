@@ -31,21 +31,23 @@ steps:
       - 'push'
       - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
 
-  # Step 4: Cloud Run 배포
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
+  # Step 4: 인스턴스에 SSH 연결 및 배포
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-      - 'run'
-      - 'deploy'
-      - 'tripmate-be'  # 서비스 이름
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
-      - '--port'
-      - '9090'  # 포트를 명시적으로 9090으로 설정
-      - '--region'
-      - 'us-central1'  # 배포할 리전
-      - '--set-env-vars'
-      - 'data.host=${_DATA_HOST},data.username=${_DATA_USER_NAME},data.userpassword=${_DATA_USER_PASSWORD},ENCRYPT_KEY=${_ENCRYPT_KEY}'
+      - '-c'
+      - |
+        gcloud compute ssh tmp-instance --zone us-central1-a --command "
+        docker pull gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA &&
+        docker stop tripmate-be || true &&
+        docker rm tripmate-be || true &&
+        docker run -d --name tripmate-be -p 9090:9090 \
+          -e data.host=${_DATA_HOST} \
+          -e data.username=${_DATA_USER_NAME} \
+          -e data.userpassword=${_DATA_USER_PASSWORD} \
+          -e ENCRYPT_KEY=${_ENCRYPT_KEY} \
+          gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA
+        "
 
 images:
   - 'gcr.io/$PROJECT_ID/tripmate-be:$COMMIT_SHA'
