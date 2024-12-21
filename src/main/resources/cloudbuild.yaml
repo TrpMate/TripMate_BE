@@ -37,7 +37,13 @@ steps:
     args:
       - '-c'
       - |
-        # 디렉토리 생성
+        # Docker와 관련된 도구들 설치
+        apt-get update && apt-get install -y docker.io google-cloud-sdk-docker-credential-helper
+
+        # Docker 인증 설정
+        echo '{"credHelpers": {"gcr.io": "gcloud"}}' > /builder/home/.docker/config.json
+
+        # SSH 디렉토리 생성
         mkdir -p /builder/home/.ssh
         
         # SSH 키 생성
