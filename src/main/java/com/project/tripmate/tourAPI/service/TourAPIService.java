@@ -53,6 +53,41 @@ public class TourAPIService {
         return restTemplate.getForObject(uri, String.class); // JSON 응답 반환
     }
 
+    // 2. 	키워드 검색 조회
+    public String searchKeyword(int numOfRows, int pageNo, String keyword, String arrange, String contentTypeId) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // URL 구성을 위한 UriBuilderFactory
+        final var builder = new DefaultUriBuilderFactory();
+        builder.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE); // 인코딩 비활성화
+
+        // API 호출을 위한 URL 구성
+        final String uriString = builder.builder()
+                .scheme("http")
+                .host("apis.data.go.kr")
+                .path("/B551011/KorService1/detailCommon1")
+                .queryParam("serviceKey", apiKey)
+                .queryParam("numOfRows", numOfRows)
+                .queryParam("pageNo", pageNo)
+                .queryParam("MobileOS", "ETC")
+                .queryParam("MobileApp", "AppTest")
+                .queryParam("_type", "json")
+                .queryParam("listYN", "Y")
+                .queryParam("arrange", arrange)
+                .queryParam("keyword", keyword)
+                .queryParam("contentTypeId", contentTypeId)
+                .build()
+                .toString();
+
+        // URI 객체 생성
+        final URI uri = URI.create(uriString);
+
+        System.out.println("Request URL: " + uri); // URL 로그 확인
+
+        // API 호출 및 응답 데이터 받기
+        return restTemplate.getForObject(uri, String.class); // JSON 응답 반환
+    }
+
     // 5. 관광 상세 정보 조회 메서드
     public String getDetailCommon(String contentId, String contentTypeId) {
         RestTemplate restTemplate = new RestTemplate();

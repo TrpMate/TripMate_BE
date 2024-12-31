@@ -1,5 +1,8 @@
 package com.project.tripmate.global;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
@@ -17,9 +20,9 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     // 유효성 검사 실패 시 발생하는 예외 처리 (MethodArgumentNotValidException)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "422", description = "유효성 검사 실패")
-    })
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "422", description = "유효성 검사 실패")
+//    })
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<JsonResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errorMessages = new HashMap<>();
@@ -43,7 +46,23 @@ public class GlobalExceptionHandler {
 
     // 모든 예외 처리 (예상하지 못한 예외 처리)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "500", description = "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = JsonResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                                "statusCode": 500,
+                                                "message": "알 수 없는 오류가 발생했습니다.",
+                                                "data": null
+                                            }
+                                            """
+                            )
+                    )
+            )
     })
     @ExceptionHandler(Exception.class)
     public ResponseEntity<JsonResponse> handleGenericException(Exception ex) {
