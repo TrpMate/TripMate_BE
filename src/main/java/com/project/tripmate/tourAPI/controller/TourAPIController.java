@@ -27,11 +27,23 @@ public class TourAPIController {
         return tourAPIService.getLocationBasedList(mapX, mapY, radius, arrange, contentTypeId, numOfRows, pageNo);
     }
 
-    // 2. 관광 상세 정보 조회 엔드포인트
+    // 2. 키워드 검색 조회
+    @GetMapping("/tour-searchKeyword")
+    public String getSearchKeyword(
+            @RequestParam int numOfRows,
+            @RequestParam int pageNo,
+            @RequestParam String keyword,
+            @RequestParam String arrange,
+            @RequestParam(required = false) String contentTypeId) {
+        return tourAPIService.searchKeyword(numOfRows, pageNo, keyword, arrange, contentTypeId);
+    }
+
+    // 5. 관광 상세 정보 조회 엔드포인트
     @GetMapping("/tour-detailCommon")
     public String getDetailCommon(
             @RequestParam String contentId,
             @RequestParam String contentTypeId) {
         return tourAPIService.getDetailCommon(contentId, contentTypeId);
     }
+
 }
