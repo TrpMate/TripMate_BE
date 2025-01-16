@@ -14,7 +14,7 @@ public class TourAPIController {
 
     private final TourAPIService tourAPIService;
 
-    // 1. 위치 기반 관광 정보 조회 엔드포인트
+    // 1. 위치 기반 관광 정보 조회 엔드포인트+++++++
     @GetMapping("/tour-locationBasedList")
     public String getLocationBasedList(
             @RequestParam double mapX,

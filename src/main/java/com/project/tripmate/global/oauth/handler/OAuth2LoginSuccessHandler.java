@@ -1,6 +1,5 @@
 package com.project.tripmate.global.oauth.handler;
 
-import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.global.jwt.JwtTokenProvider;
 import com.project.tripmate.global.oauth.domain.CustomOAuth2User;
 import com.project.tripmate.global.oauth.service.CustomOAuth2UserService;
@@ -8,10 +7,11 @@ import com.project.tripmate.global.oauth.userInfo.OAuth2UserInfo;
 import com.project.tripmate.global.oauth.userInfo.OAuth2UserInfoFactory;
 import com.project.tripmate.user.domain.CustomUserDetails;
 import com.project.tripmate.user.domain.User;
-import com.project.tripmate.user.dto.UserResponseDTO;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,19 +48,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String accessToken = jwtTokenProvider.createToken(auth);
         String refreshToken = jwtTokenProvider.createRefreshToken(auth);
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
+        // 헤더에 토큰 추가
+        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         response.setHeader("Refresh-Token", refreshToken);
 
-        UserResponseDTO userResponseDTO = UserResponseDTO.from(user); // UserResponseDTO로 변환
-        JsonResponse jsonResponse = new JsonResponse(
-                HttpServletResponse.SC_OK,
-                "로그인 성공",
-                userResponseDTO
-        );
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        response.getWriter().write(jsonResponse.toJson());
+        // 리다이렉트 URL 설정
+        // String redirectUrl = "http://frontend.com/home"; // 리다이렉트할 URL
+        String redirectUri = String.format("http://frontend.com/home",accessToken, refreshToken);
+        getRedirectStrategy().sendRedirect(request, response, redirectUri);
     }
 }

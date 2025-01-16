@@ -1,5 +1,7 @@
 package com.project.tripmate.tourAPI.service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -61,11 +63,13 @@ public class TourAPIService {
         final var builder = new DefaultUriBuilderFactory();
         builder.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE); // 인코딩 비활성화
 
+        String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
+
         // API 호출을 위한 URL 구성
         final String uriString = builder.builder()
                 .scheme("http")
                 .host("apis.data.go.kr")
-                .path("/B551011/KorService1/detailCommon1")
+                .path("/B551011/KorService1/searchKeyword1")
                 .queryParam("serviceKey", apiKey)
                 .queryParam("numOfRows", numOfRows)
                 .queryParam("pageNo", pageNo)
@@ -74,7 +78,7 @@ public class TourAPIService {
                 .queryParam("_type", "json")
                 .queryParam("listYN", "Y")
                 .queryParam("arrange", arrange)
-                .queryParam("keyword", keyword)
+                .queryParam("keyword", encodedKeyword)
                 .queryParam("contentTypeId", contentTypeId)
                 .build()
                 .toString();
