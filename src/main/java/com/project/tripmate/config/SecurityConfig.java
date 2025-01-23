@@ -54,20 +54,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
-                        .requestMatchers("/login", "/auth/**", "/user/signup", "/tourAPI/**")
+                        .requestMatchers("/login", "/auth/**", "/oauth/**", "/user/signup", "/tourAPI/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/course/**", "/mail/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
-                        .failureHandler(oauth2LoginFailureHandler)
-                        .successHandler(oauth2LoginSuccessHandler)
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
 

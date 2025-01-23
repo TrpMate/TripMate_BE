@@ -33,6 +33,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                                         Authentication authentication) throws IOException {
         // CustomOAuth2User 객체를 생성
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+
+        // 여기서부터는 돌려쓰면 됨!
         String socialType = customOAuth2User.getSocialType();
 
         // OAuth2UserInfo를 사용하여 사용자 정보를 가져옴

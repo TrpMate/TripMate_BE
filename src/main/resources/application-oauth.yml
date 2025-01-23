@@ -27,6 +27,8 @@ spring:
             client-name: Naver
 
         provider:
+          google:
+            token_uri: https://oauth2.googleapis.com/token
           kakao:
             authorization_uri: https://kauth.kakao.com/oauth/authorize
             token_uri: https://kauth.kakao.com/oauth/token

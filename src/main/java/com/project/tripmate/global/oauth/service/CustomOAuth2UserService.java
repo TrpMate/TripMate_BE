@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
+    private final GoogleOAuth2Service googleOAuth2Service;
+    private final KakaoOAuth2Service kakaoOAuth2Service;
+    private final NaverOAuth2Service naverOAuth2Service;
 
     @Override
     @Transactional
@@ -64,5 +67,19 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     public User getUserByOAuth2UserInfo(OAuth2UserInfo userInfo, String registrationId) {
         return userRepository.findBySocialId(userInfo.getId())
                 .orElseGet(() -> createNewUser(userInfo, registrationId));
+    }
+
+    // 소셜 타입에 맞는 액세스 토큰을 발급받는 메서드
+    public String getAccessToken(String authorizationCode, String socialType) {
+        switch (socialType.toLowerCase()) {
+            case "google":
+                return googleOAuth2Service.getAccessToken(authorizationCode);
+            case "kakao":
+                return kakaoOAuth2Service.getAccessToken(authorizationCode);
+            case "naver":
+                return naverOAuth2Service.getAccessToken(authorizationCode);
+            default:
+                throw new IllegalArgumentException("Unsupported social type: " + socialType);
+        }
     }
 }
