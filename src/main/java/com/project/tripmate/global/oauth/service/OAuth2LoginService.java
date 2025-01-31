@@ -46,7 +46,7 @@ public class OAuth2LoginService {
 
         // 헤더 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
         headers.add("Refresh-Token", refreshToken);
 
         return headers;
