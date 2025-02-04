@@ -24,6 +24,7 @@ public class CorsConfig {
         );
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        configuration.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
         configuration.setAllowCredentials(true); // 쿠키 허용 여부 설정
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

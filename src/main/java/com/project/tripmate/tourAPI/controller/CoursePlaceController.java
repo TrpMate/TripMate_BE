@@ -4,6 +4,7 @@ import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.tourAPI.domain.CoursePlace;
 import com.project.tripmate.tourAPI.dto.CoursePlaceDTO;
 import com.project.tripmate.tourAPI.service.CoursePlaceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +16,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/course-places")
+@RequiredArgsConstructor
 public class CoursePlaceController {
 
     private final CoursePlaceService coursePlaceService;
-
-    @Autowired
-    public CoursePlaceController(CoursePlaceService coursePlaceService) {
-        this.coursePlaceService = coursePlaceService;
-    }
 
     @PostMapping
     public ResponseEntity<JsonResponse<CoursePlaceDTO>> createCoursePlace(@RequestParam Long courseDayId,
