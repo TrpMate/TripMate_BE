@@ -43,8 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (ExpiredJwtException e) {
-            // 만료된 JWT 처리
-            handleTokenExpiration(request, response);
+            // Access Token이 만료되었지만 Refresh Token 검사는 여기서 하지 않음
+            SecurityContextHolder.clearContext();
             return;
         } catch (Exception e) {
             // 예외 발생 시 SecurityContext 초기화
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     // 토큰 만료 처리 로직
-    private void handleTokenExpiration(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void handleTokenExpiration(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Refresh Token 추출
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
         if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {

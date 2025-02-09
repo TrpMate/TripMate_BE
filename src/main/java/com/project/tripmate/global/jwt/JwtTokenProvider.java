@@ -79,11 +79,11 @@ public class JwtTokenProvider {
 
     // HttpServletRequest에서 Refresh 토큰을 추출
     public String resolveRefreshToken(HttpServletRequest request) {
-        String refreshToken = request.getHeader("Refresh-Token");
-        System.out.println(refreshToken);
+        if (request.getRequestURI().equals("/jwt/token/refresh")) {
+            return request.getHeader("Refresh-Token");
+        }
         return null;
     }
-
 
     // Refresh 토큰을 블랙리스트에 추가하고, 성공적으로 추가되면 true를 반환한다.
     public boolean blacklistRefreshToken(String refreshToken) {

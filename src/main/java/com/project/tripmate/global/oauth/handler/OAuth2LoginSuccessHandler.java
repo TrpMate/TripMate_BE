@@ -7,7 +7,6 @@ import com.project.tripmate.global.oauth.userInfo.OAuth2UserInfo;
 import com.project.tripmate.global.oauth.userInfo.OAuth2UserInfoFactory;
 import com.project.tripmate.user.domain.CustomUserDetails;
 import com.project.tripmate.user.domain.User;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
