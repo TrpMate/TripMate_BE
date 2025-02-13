@@ -2,7 +2,6 @@ package com.project.tripmate.global.jwt.controller;
 
 import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.global.jwt.JwtAuthenticationFilter;
-import com.project.tripmate.user.dto.UserResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

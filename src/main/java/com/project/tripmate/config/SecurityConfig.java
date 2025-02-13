@@ -5,12 +5,14 @@ import com.project.tripmate.global.jwt.JwtTokenProvider;
 import com.project.tripmate.global.oauth.handler.OAuth2LoginFailureHandler;
 import com.project.tripmate.global.oauth.handler.OAuth2LoginSuccessHandler;
 import com.project.tripmate.global.oauth.service.CustomOAuth2UserService;
+import com.project.tripmate.global.oauth.token.OAuthAuthenticationProvider;
 import com.project.tripmate.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,10 +31,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
-    private final OAuth2LoginFailureHandler oauth2LoginFailureHandler;
     private final CorsConfig corsConfig; // CorsConfig 빈을 주입받습니다.
+    private final OAuthAuthenticationProvider oAuthAuthenticationProvider;
 
     @Bean // 비밀번호 암호화를 위한 PasswordEncoder 빈 생성
     public PasswordEncoder passwordEncoder() {
@@ -63,5 +63,10 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
+    }
+
+    // OAuthAuthenticationProvider를 AuthenticationManager에 등록하는 설정
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(oAuthAuthenticationProvider);  // OAuthAuthenticationProvider 추가
     }
 }
