@@ -93,8 +93,18 @@ public class UserService {
     // 이메일 중복 체크 메서드
     private void validateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new DuplicateEmailException("이미 등록된 이메일입니다.");
+            throw new DuplicateEmailException("이미 존재하는 이메일입니다.");
         }
+    }
+
+    // 이메일 중복 체크 메서드
+    public boolean checkEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    // 이메일 중복 체크 메서드
+    public boolean checkNicknameDuplicate(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 
     // 이메일 전송 메서드

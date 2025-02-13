@@ -280,6 +280,18 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(summary = "이메일 중복체크 API", description = "이메일이 중복되는 경우 true, 중복되지 않은경우 false가 리턴됩니다.")
+    @GetMapping("/check-duplicate/email")
+    public ResponseEntity<Boolean> checkEmailDuplicate(@PathVariable String email) {
+        return ResponseEntity.ok(userService.checkEmailDuplicate(email));
+    }
+
+    @Operation(summary = "닉네임 중복체크 API", description = "닉네임이 중복되는 경우 true, 중복되지 않은경우 false가 리턴됩니다.")
+    @GetMapping("/check-duplicate/nickname")
+    public ResponseEntity<Boolean> checkNicknameDuplicate(@PathVariable String nickname) {
+        return ResponseEntity.ok(userService.checkNicknameDuplicate(nickname));
+    }
+
 
     // 이미 존재하는 이메일로 회원가입을 시도할 때 발생하는 예외 처리
     @ExceptionHandler(DuplicateEmailException.class)
