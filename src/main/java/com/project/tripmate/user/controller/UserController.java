@@ -281,12 +281,14 @@ public class UserController {
     }
 
     @Operation(summary = "이메일 중복체크 API", description = "이메일이 중복되는 경우 true, 중복되지 않은경우 false가 리턴됩니다.")
+    @Parameter(description = "중복체크할 이메일", name = "email", required = true, in = ParameterIn.PATH)
     @GetMapping("/check-duplicate/email")
     public ResponseEntity<Boolean> checkEmailDuplicate(@PathVariable String email) {
         return ResponseEntity.ok(userService.checkEmailDuplicate(email));
     }
 
     @Operation(summary = "닉네임 중복체크 API", description = "닉네임이 중복되는 경우 true, 중복되지 않은경우 false가 리턴됩니다.")
+    @Parameter(description = "중복체크할 닉네임", name = "nickname", required = true, in = ParameterIn.PATH)
     @GetMapping("/check-duplicate/nickname")
     public ResponseEntity<Boolean> checkNicknameDuplicate(@PathVariable String nickname) {
         return ResponseEntity.ok(userService.checkNicknameDuplicate(nickname));
