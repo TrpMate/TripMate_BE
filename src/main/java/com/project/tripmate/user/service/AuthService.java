@@ -39,6 +39,7 @@ public class AuthService {
 
             return headers;
         } catch (AuthenticationException e) {
+            System.out.println("로그인 실패: " + e.getMessage());
             // 로그인 실패 처리
             userDetailsService.handleAccountStatus(email);
             userDetailsService.processFailedLogin(email);

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String VERIFICATION_URL = "http://localhost:9090/mail/verify/";
+    private static final String VERIFICATION_URL = "https://tripmate-be.shop/mail/verify/";
 
     public void sendEmail(String to, String verificationToken, String subject) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
