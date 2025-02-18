@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,40 +22,36 @@ public class OAuth2LoginService {
 
     private final CustomOAuth2UserService oAuth2Service;
     private final JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private AuthenticationManager authenticationManager; // AuthenticationManager 주입
+    private final AuthenticationManager authenticationManager;
 
     public HttpHeaders handleOAuth2Login(String authorizationCode, String socialType) {
-        // 액세스 토큰을 발급받고 사용자 정보를 가져옵니다.
+
+        // 1. 액세스 토큰 발급
         String accessToken = oAuth2Service.getAccessToken(authorizationCode, socialType);
 
-        // AccessToken으로 사용자 정보 가져오기
+        // 2. OAuth AccessToken으로 사용자 정보 가져오기
         CustomOAuth2User customOAuth2User = CustomOAuth2User.fetchUserFromAccessToken(socialType, accessToken);
-
-        // OAuth2UserInfo를 통해 사용자 정보 처리
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(socialType, customOAuth2User.getAttributes());
 
-        // 사용자 정보로 User 객체 생성
+        // 3. DB에서 기존 유저 조회 or 신규 생성
         User user = oAuth2Service.getUserByOAuth2UserInfo(userInfo, socialType);
 
-        // CustomUserDetails로 Authentication 생성
+        // 4. CustomUserDetails로 변환 (Spring Security에서 인식 가능하게)
         CustomUserDetails userDetails = new CustomUserDetails(user);
-        System.out.println("OAuth 로그인 username: " + userDetails.getUsername());
 
-        // OAuthAuthenticationToken으로 Authentication 생성
-        Authentication auth = authenticationManager.authenticate(
-                new OAuthAuthenticationToken(userDetails, userDetails.getAuthorities())
+        // 5. Spring Security 인증 프로세스를 통과하도록 Authentication 객체 생성
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()) // 🔥 여기에 userDetails 사용!
         );
 
-        // SecurityContext에 Authentication 저장
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        // 6. SecurityContextHolder에 저장 (Spring Security에서 인식)
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // JWT 토큰 생성
-        String jwtToken = jwtTokenProvider.createToken(auth);
-        String refreshToken = jwtTokenProvider.createRefreshToken(auth);
+        // 7. JWT 생성
+        String jwtToken = jwtTokenProvider.createToken(authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-        // 헤더 설정
+        // 8. 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
         headers.add("Refresh-Token", refreshToken);
