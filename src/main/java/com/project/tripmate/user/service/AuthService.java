@@ -1,6 +1,7 @@
 package com.project.tripmate.user.service;
 
 import com.project.tripmate.global.jwt.JwtTokenProvider;
+import com.project.tripmate.global.oauth.token.OAuthAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;

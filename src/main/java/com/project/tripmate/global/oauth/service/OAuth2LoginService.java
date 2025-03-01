@@ -22,7 +22,6 @@ public class OAuth2LoginService {
 
     private final CustomOAuth2UserService oAuth2Service;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
 
     public HttpHeaders handleOAuth2Login(String authorizationCode, String socialType) {
 
@@ -39,19 +38,15 @@ public class OAuth2LoginService {
         // 4. CustomUserDetails로 변환 (Spring Security에서 인식 가능하게)
         CustomUserDetails userDetails = new CustomUserDetails(user);
 
-        // 5. Spring Security 인증 프로세스를 통과하도록 Authentication 객체 생성
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()) // 🔥 여기에 userDetails 사용!
-        );
-
-        // 6. SecurityContextHolder에 저장 (Spring Security에서 인식)
+        // 5. OAuthAuthenticationToken 생성 후 SecurityContext에 저장
+        Authentication authentication = new OAuthAuthenticationToken(userDetails, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 7. JWT 생성
+        // 6. JWT 생성
         String jwtToken = jwtTokenProvider.createToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-        // 8. 헤더 설정
+        // 7. 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
         headers.add("Refresh-Token", refreshToken);
@@ -59,4 +54,5 @@ public class OAuth2LoginService {
         return headers;
     }
 }
+
 
