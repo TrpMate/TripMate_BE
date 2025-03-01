@@ -2,6 +2,7 @@ package com.project.tripmate.config;
 
 import com.project.tripmate.global.jwt.JwtAuthenticationFilter;
 import com.project.tripmate.global.jwt.JwtTokenProvider;
+import com.project.tripmate.global.oauth.token.OAuthAuthenticationProvider;
 import com.project.tripmate.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

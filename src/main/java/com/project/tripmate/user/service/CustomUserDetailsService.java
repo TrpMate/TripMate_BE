@@ -77,4 +77,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(attempts -> MAX_FAILED_ATTEMPTS - attempts + 1)
                 .orElse(1);
     }
+
+    public User loadUserBySocialTypeAndEmail(String socialType, String email) {
+        // socialType과 email로 유저 조회
+        return userRepository.findBySocialTypeAndEmail(socialType, email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }

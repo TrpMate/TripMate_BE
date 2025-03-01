@@ -1,6 +1,8 @@
 package com.project.tripmate.global.jwt;
 
+import com.project.tripmate.global.oauth.token.OAuthAuthenticationToken;
 import com.project.tripmate.user.domain.CustomUserDetails;
+import com.project.tripmate.user.domain.User;
 import com.project.tripmate.user.service.CustomUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -32,54 +34,56 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 토큰에서 사용자 정보 추출
                 String email = jwtTokenProvider.getEmail(jwt);
 
-                // 사용자 정보로부터 UserDetails 로드
-                CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
-                // 인증 객체 생성
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // JWT에서 auth_type 추출
+                String socialType = jwtTokenProvider.getClaimFromToken(jwt, "socialType");
 
-                // SecurityContext에 인증 객체 설정
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                // OAuth 인증 처리
+                if (!socialType.isEmpty()) {
+                    User user = userDetailsService.loadUserBySocialTypeAndEmail(socialType, email);
+                    CustomUserDetails userDetails = new CustomUserDetails(user);
+
+                    OAuthAuthenticationToken authenticationToken = new OAuthAuthenticationToken(
+                            userDetails, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                } else {
+                    CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         } catch (ExpiredJwtException e) {
-            // Access Token이 만료되었지만 Refresh Token 검사는 여기서 하지 않음
-            SecurityContextHolder.clearContext();
-            return;
+            // 만약 JWT 토큰이 만료되면 handleTokenExpiration 메서드 호출
+            handleTokenExpiration(request, response);
         } catch (Exception e) {
-            // 예외 발생 시 SecurityContext 초기화
             SecurityContextHolder.clearContext();
         }
 
-        // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
 
     // 토큰 만료 처리 로직
     public void handleTokenExpiration(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Refresh Token 추출
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
         if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-            // Refresh Token이 블랙리스트에 없으면 새로운 Access Token 발급
             if (!jwtTokenProvider.isRefreshTokenBlacklisted(refreshToken)) {
-                String jwtToken = jwtTokenProvider.createTokenFromRefreshToken(refreshToken);
+                String socialType = jwtTokenProvider.getClaimFromToken(refreshToken, "socialType");
+                String jwtToken = jwtTokenProvider.createTokenFromRefreshToken(refreshToken, socialType);
                 response.setHeader("Authorization", "Bearer " + jwtToken);
 
-                // 새로 발급받은 Access Token으로 UserDetails 로드
                 String email = jwtTokenProvider.getEmail(jwtToken);
                 CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
 
-                // 인증 객체 생성 및 SecurityContext에 설정
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                // Refresh Token이 블랙리스트에 있으면 Unauthorized 에러 반환
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh token is blacklisted");
             }
         } else {
-            // 유효하지 않은 Refresh Token일 경우 SecurityContext 초기화 및 Unauthorized 에러 반환
             SecurityContextHolder.clearContext();
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid refresh token");
         }

@@ -33,13 +33,13 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
 
     // 주어진 Authentication 객체를 기반으로 JWT 토큰을 생성한다.
-    public String createToken(Authentication authentication) {
-        return generateToken(authentication, accessTokenValiditySeconds);
+    public String createToken(Authentication authentication, String socialType) {
+        return generateToken(authentication, accessTokenValiditySeconds, socialType);
     }
 
     // 주어진 Authentication 객체를 기반으로 Refresh JWT 토큰을 생성한다.
-    public String createRefreshToken(Authentication authentication) {
-        return generateToken(authentication, refreshTokenValiditySeconds);
+    public String createRefreshToken(Authentication authentication, String socialType) {
+        return generateToken(authentication, refreshTokenValiditySeconds, socialType);
     }
 
     // JWT 토큰의 유효성 검사
@@ -108,20 +108,22 @@ public class JwtTokenProvider {
     }
 
     // Refresh 토큰을 사용하여 새로운 Access 토큰 생성
-    public String createTokenFromRefreshToken(String refreshToken) {
+    public String createTokenFromRefreshToken(String refreshToken, String socialType) {
         if (!validateRefreshToken(refreshToken)) {
             throw new IllegalArgumentException("Invalid refresh token");
         }
 
         String email = getEmail(refreshToken);
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
-        return generateToken(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()), accessTokenValiditySeconds);
+        return generateToken(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()), accessTokenValiditySeconds, socialType);
     }
 
     // JWT 토큰 생성
-    private String generateToken(Authentication authentication, long validitySeconds) {
+    private String generateToken(Authentication authentication, long validitySeconds, String socialType) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
+
+        claims.put("socialType", socialType);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validitySeconds * 1000);
@@ -135,5 +137,14 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    // JWT 토큰에서 특정 클레임을 추출하는 메서드
+    public String getClaimFromToken(String token, String claimKey) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(claimKey, String.class);  // 원하는 클레임을 반환
     }
 }

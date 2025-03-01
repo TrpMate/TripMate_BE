@@ -30,8 +30,9 @@ public class AuthService {
             userService.setOnlineStatus(email, true); // 로그인 성공 시 온라인 상태로 변경
 
             // 토큰 생성
-            String accessToken = jwtTokenProvider.createToken(authentication);
-            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+            String socialType = "";
+            String accessToken = jwtTokenProvider.createToken(authentication, socialType);
+            String refreshToken = jwtTokenProvider.createRefreshToken(authentication, socialType);
 
             // 헤더 설정
             HttpHeaders headers = new HttpHeaders();

@@ -8,10 +8,7 @@ import com.project.tripmate.global.oauth.userInfo.OAuth2UserInfoFactory;
 import com.project.tripmate.user.domain.User;
 import com.project.tripmate.user.domain.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -43,8 +40,8 @@ public class OAuth2LoginService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 6. JWT 생성
-        String jwtToken = jwtTokenProvider.createToken(authentication);
-        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+        String jwtToken = jwtTokenProvider.createToken(authentication, socialType);
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication, socialType);
 
         // 7. 헤더 설정
         HttpHeaders headers = new HttpHeaders();
