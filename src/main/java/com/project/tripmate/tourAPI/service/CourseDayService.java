@@ -4,6 +4,7 @@ import com.project.tripmate.tourAPI.domain.Course;
 import com.project.tripmate.tourAPI.domain.CourseDay;
 import com.project.tripmate.tourAPI.repository.CourseDayRepository;
 import com.project.tripmate.tourAPI.repository.CourseRepository;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,10 @@ public class CourseDayService {
 
     public List<CourseDay> getAllCourseDays() {
         return courseDayRepository.findAll();
+    }
+
+    public List<CourseDay> getCourseDaysByCourseId(Long courseId) {
+        return courseDayRepository.findByCourseId(courseId);
     }
 
     public CourseDay updateCourseDay(Long id, int dayNum, LocalDate dayDate) {
