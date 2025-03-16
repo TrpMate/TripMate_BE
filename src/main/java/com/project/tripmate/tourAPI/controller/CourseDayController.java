@@ -111,7 +111,7 @@ public class CourseDayController {
         return buildResponse(HttpStatus.OK, "코스 일자 목록을 성공적으로 조회했습니다.", courseDayDTOs);
     }
 
-    @GetMapping("/by-course-id/{id}")
+    @GetMapping("/by-course-id/{courseId}")
     @Operation(
             summary = "특정 Course의 CourseDay 목록 조회",
             description = "courseId를 기준으로 CourseDay 목록을 조회합니다.",
