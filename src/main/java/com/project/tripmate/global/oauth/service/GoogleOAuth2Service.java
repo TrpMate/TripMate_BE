@@ -1,5 +1,6 @@
 package com.project.tripmate.global.oauth.service;
 
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -30,6 +31,8 @@ public class GoogleOAuth2Service {
         String url = googleTokenUrl;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
 
         // 요청 본문 (폼 데이터)
         String body = "code=" + authorizationCode +
