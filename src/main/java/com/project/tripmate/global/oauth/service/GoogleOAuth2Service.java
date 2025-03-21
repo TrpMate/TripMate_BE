@@ -49,18 +49,26 @@ public class GoogleOAuth2Service {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
         // 응답에서 액세스 토큰 추출
-        String accessToken = extractAccessTokenFromResponse(response.getBody());
-
-        return accessToken;
+        return extractAccessTokenFromResponse(response.getBody());
     }
 
     private String extractAccessTokenFromResponse(String responseBody) {
         try {
+            // ObjectMapper를 사용하여 응답을 JSON 객체로 변환
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(responseBody);
-            return jsonNode.has("access_token") ? jsonNode.get("access_token").asText() : null;
+
+            // 액세스 토큰이 존재하는지 체크
+            if (jsonNode.has("access_token")) {
+                return jsonNode.get("access_token").asText();  // 액세스 토큰 반환
+            } else {
+                // 액세스 토큰이 없다면 상세한 에러 메시지 포함
+                throw new RuntimeException("Access token not found in response: " + responseBody);
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse access token", e);
+            // 예외가 발생했을 경우, 예외 메시지와 함께 RuntimeException을 던짐
+            throw new RuntimeException("Failed to parse access token from response: " + responseBody, e);
         }
     }
+
 }
