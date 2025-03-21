@@ -4,6 +4,8 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
 
 @Service
@@ -53,10 +55,12 @@ public class GoogleOAuth2Service {
     }
 
     private String extractAccessTokenFromResponse(String responseBody) {
-        // 응답에서 액세스 토큰을 추출하는 로직 (JSON 파싱)
-        // 예시에서는 간단히 반환하는 방식으로 처리
-        // 실제로는 JSON 파싱을 해야 하므로 라이브러리를 사용해야 함 (예: Jackson, Gson)
-        String accessToken = responseBody.split("\"access_token\":\"")[1].split("\"")[0];
-        return accessToken;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+            return jsonNode.has("access_token") ? jsonNode.get("access_token").asText() : null;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse access token", e);
+        }
     }
 }
