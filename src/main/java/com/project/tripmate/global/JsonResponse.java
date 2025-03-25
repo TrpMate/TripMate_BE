@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -20,5 +21,15 @@ public class JsonResponse<T> {
             e.printStackTrace();
             return "{}";
         }
+    }
+
+    // 성공과 데이터를 포함하는 JsonResponse 생성
+    public static <T> JsonResponse<T> success(T data, String message) {
+        return new JsonResponse<>(200, message, data);
+    }
+
+    // 실패와 메시지를 포함하는 JsonResponse 생성
+    public static <T> JsonResponse<T> failure(HttpStatus statusCode, String message) {
+        return new JsonResponse<>(statusCode.value(), message, null);
     }
 }

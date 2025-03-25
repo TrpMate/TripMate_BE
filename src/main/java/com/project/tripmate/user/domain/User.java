@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -69,6 +71,17 @@ public class User {
     // 사용자의 온라인 상태
     @Column(name = "online_status")
     private boolean onlineStatus; // true: 온라인, false: 오프라인
+
+    @Column(name = "user_role", length = 10)
+    @Enumerated(EnumType.STRING)
+    private Role userRole; // 디폴트를 USER로 설정
+
+    @PrePersist
+    public void prePersist() {
+        if (userRole == null) {
+            userRole = Role.USER;  // 기본값 설정
+        }
+    }
 
 //    @ManyToMany(mappedBy = "users")
 //    private Set<ChatRoom> chatRooms = new HashSet<>(); // 사용자가 참여하는 채팅방
@@ -150,5 +163,4 @@ public class User {
         this.socialId = socialId;
         this.accountEnabled = true; // OAuth 로그인 후 사용자는 활성화 상태
     }
-
 }
