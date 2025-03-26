@@ -136,8 +136,7 @@ public class AuthController {
     }
 
     private ResponseEntity<JsonResponse<String>> createLoginSuccessResponse(HttpHeaders headers) {
-        JsonResponse<String> response = new JsonResponse<>(HttpStatus.OK.value(), "로그인에 성공했습니다.", null);
-        return ResponseEntity.ok().headers(headers).body(response);
+        return ResponseEntity.ok().headers(headers).body(JsonResponse.success(null, "로그인에 성공했습니다."));
     }
 
     private ResponseEntity<JsonResponse<String>> createLogoutSuccessResponse() {
@@ -165,8 +164,7 @@ public class AuthController {
     }
 
     private ResponseEntity<JsonResponse<String>> createErrorResponse(HttpStatus status, String message) {
-        JsonResponse<String> errorResponse = new JsonResponse<>(status.value(), message, null);
-        return ResponseEntity.status(status).body(errorResponse);
+        return ResponseEntity.status(status).body(JsonResponse.failure(status, message));
     }
 
     @Getter

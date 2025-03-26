@@ -41,6 +41,10 @@ public class CourseUserService {
         return null;
     }
 
+    public List<Long> getCourseIdListByUserId(Long userId) {
+        return courseUserRepository.findCourseIdsByUserId(userId);
+    }
+
     public Optional<CourseUser> getCourseUserById(Long id) {
         return courseUserRepository.findById(id);
     }

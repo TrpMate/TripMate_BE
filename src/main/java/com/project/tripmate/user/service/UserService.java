@@ -30,7 +30,7 @@ public class UserService {
         String encodedPassword = encodePassword(userRequestDTO.getPassword());
         String verificationToken = UUID.randomUUID().toString();
         User user = createUser(userRequestDTO, encodedPassword, verificationToken);
-        sendEmail(user.getEmail(), verificationToken, "회원가입 이메일 인증");
+        sendEmailForSignUp(user.getEmail(), verificationToken, "회원가입 이메일 인증");
         userRepository.save(user);
         return UserResponseDTO.from(user);
     }
@@ -59,7 +59,7 @@ public class UserService {
             String verificationToken = UUID.randomUUID().toString();
             user.updateUser(userRequestDTO, passwordEncoder,verificationToken);
             try {
-                sendEmail(user.getEmail(), verificationToken, "회원 정보 수정용 이메일 인증");
+                sendEmailForSignUp(user.getEmail(), verificationToken, "회원 정보 수정용 이메일 인증");
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
@@ -108,14 +108,19 @@ public class UserService {
     }
 
     // 이메일 전송 메서드
-    private void sendEmail(String email, String verificationToken, String subject) throws MessagingException {
-        mailService.sendEmail(email, verificationToken, subject);
+    private void sendEmailForSignUp(String email, String verificationToken, String subject) throws MessagingException {
+        mailService.sendEmailForSignUp(email, verificationToken, subject);
     }
 
     // 토큰을 사용하여 사용자 조회
     private User findUserByVerificationToken(String token) {
         return userRepository.findByMailVerificationToken(token)
                 .orElseThrow(() -> new IllegalStateException("유효한 토큰이 없습니다."));
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("해당 이메일을 가진 사용자를 찾을 수 없습니다."));
     }
 
     // 비밀번호 암호화 메서드

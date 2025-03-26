@@ -46,14 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userDetails, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    System.out.println("Authentication set: " + SecurityContextHolder.getContext().getAuthentication());
                 } else {
                     CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("Authentication set: " + SecurityContextHolder.getContext().getAuthentication());
                 }
             }
         } catch (ExpiredJwtException e) {

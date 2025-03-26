@@ -170,11 +170,7 @@ public class UserController {
     public ResponseEntity<JsonResponse<UserResponseDTO>> updateUser(@PathVariable Long userId,
             @Valid @RequestBody UserRequestDTO userRequestDTO) {
         UserResponseDTO userResponseDTO = userService.updateUser(userId, userRequestDTO);
-        JsonResponse<UserResponseDTO> response = new JsonResponse<>(
-                HttpStatus.OK.value(),
-                "회원 정보를 성공적으로 수정했습니다. 이메일 인증을 완료해주세요.",
-                userResponseDTO);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(JsonResponse.success(userResponseDTO, "회원 정보를 성공적으로 수정했습니다. 이메일 인증을 완료해주세요."));
     }
 
     // 회원 정보 조회
@@ -224,11 +220,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<JsonResponse<UserResponseDTO>> getUser(@PathVariable Long userId) {
         UserResponseDTO userResponseDTO = userService.getUserById(userId);
-        JsonResponse<UserResponseDTO> response = new JsonResponse<>(
-                HttpStatus.OK.value(),
-                "회원 정보를 성공적으로 조회했습니다.",
-                userResponseDTO);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(JsonResponse.success(userResponseDTO, "회원 정보를 성공적으로 조회했습니다."));
     }
 
     // 회원 삭제
@@ -298,21 +290,13 @@ public class UserController {
     // 이미 존재하는 이메일로 회원가입을 시도할 때 발생하는 예외 처리
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<JsonResponse<UserResponseDTO>> handleIllegalStateException(DuplicateEmailException ex) {
-        JsonResponse<UserResponseDTO> response = new JsonResponse<>(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonResponse.failure(HttpStatus.BAD_REQUEST,
+                ex.getMessage()));
     }
 
     // 사용자를 찾을 수 없을 때 발생하는 예외 처리
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<JsonResponse<UserResponseDTO>> handleUserNotFoundException(UserNotFoundException ex) {
-        JsonResponse<UserResponseDTO> response = new JsonResponse<>(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                null);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(JsonResponse.failure(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 }

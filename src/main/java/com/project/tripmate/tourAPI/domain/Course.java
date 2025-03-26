@@ -1,9 +1,12 @@
 package com.project.tripmate.tourAPI.domain;
 
+import com.project.tripmate.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,6 +41,10 @@ public class Course {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; //작성자
 
     public void setCourse(String courseName, boolean isPublic, LocalDate startDate, LocalDate endDate) {
         this.courseName = courseName;

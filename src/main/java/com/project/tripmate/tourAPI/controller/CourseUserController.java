@@ -1,28 +1,47 @@
 package com.project.tripmate.tourAPI.controller;
 
 import com.project.tripmate.global.JsonResponse;
+import com.project.tripmate.tourAPI.domain.Course;
 import com.project.tripmate.tourAPI.domain.CourseUser;
 import com.project.tripmate.tourAPI.dto.CourseUserDTO;
+import com.project.tripmate.tourAPI.service.CourseService;
 import com.project.tripmate.tourAPI.service.CourseUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.project.tripmate.user.domain.CustomUserDetails;
+import com.project.tripmate.user.domain.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/course-users")
+@RequiredArgsConstructor
 public class CourseUserController {
 
     private final CourseUserService courseUserService;
+    private final CourseService courseService;
 
-    @Autowired
-    public CourseUserController(CourseUserService courseUserService) {
-        this.courseUserService = courseUserService;
+    @PostMapping("/invite")
+    public ResponseEntity<JsonResponse<CourseUserDTO>> createCourseUserForInvite(
+            @RequestParam Long courseId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        User user = customUserDetails.getUser();
+        CourseUserDTO courseUserDTO = convertToDTO(courseUserService.createCourseUser(courseId, user.getId()));
+
+        // Optional 처리 (코스가 존재하지 않으면 예외 발생)
+        Course course = courseService.getCourseById(courseId)
+                .orElseThrow(() -> new RuntimeException("해당 ID의 코스를 찾을 수 없습니다."));
+
+        String courseName = course.getCourseName();
+
+        return ResponseEntity.ok(JsonResponse.success(courseUserDTO, courseName + "의 멤버가 되었습니다."));
     }
+
 
     @PostMapping
     public ResponseEntity<JsonResponse<CourseUserDTO>> createCourseUser(@RequestParam Long courseId,
