@@ -4,7 +4,7 @@ import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.user.domain.User;
 import com.project.tripmate.user.dto.UserResponseDTO;
 import com.project.tripmate.user.service.UserService;
-import com.project.tripmate.tourAPI.service.CourseUserService;
+import com.project.tripmate.course.service.CourseUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
