@@ -18,17 +18,16 @@ public class QuestionService {
     private final UserRepository userRepository;
 
     // 문의 작성
-    public QuestionDTO createQuestion(Long userId, String category, String title, String content) {
+    public QuestionDTO createQuestion(Long userId, String category, String title, String content, boolean secret) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         Question question = new Question();
-        question.createQuestion(user, category, title, content);
+        question.createQuestion(user, category, title, content, secret);
 
         Question savedQuestion = questionRepository.save(question);
 
-        // Question 엔티티를 QuestionDTO로 변환하여 반환
-        return new QuestionDTO(savedQuestion.getId(), savedQuestion.getCategory(), savedQuestion.getTitle(), savedQuestion.getContent(), savedQuestion.getCreatedAt().toString());
+        return QuestionDTO.fromEntity(savedQuestion);
     }
 
     // 내 문의 목록 조회
@@ -37,10 +36,8 @@ public class QuestionService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         List<Question> questions = questionRepository.findByUser(user);
-
-        // List<Question>을 List<QuestionDTO>로 변환
         return questions.stream()
-                .map(question -> new QuestionDTO(question.getId(), question.getCategory(), question.getTitle(), question.getContent(), question.getCreatedAt().toString()))
+                .map(QuestionDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +50,6 @@ public class QuestionService {
             throw new RuntimeException("본인의 문의만 조회할 수 있습니다.");
         }
 
-        // Question 엔티티를 QuestionDTO로 변환하여 반환
-        return new QuestionDTO(question.getId(), question.getCategory(), question.getTitle(), question.getContent(), question.getCreatedAt().toString());
+        return QuestionDTO.fromEntity(question);
     }
 }

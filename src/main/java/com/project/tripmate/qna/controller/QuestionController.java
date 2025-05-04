@@ -26,7 +26,8 @@ public class QuestionController {
     @Operation(summary = "질문 생성", description = "새로운 질문을 생성합니다.")
     public ResponseEntity<JsonResponse<QuestionDTO>> createQuestion(@RequestBody QuestionDTO dto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
-        QuestionDTO questionDTO = questionService.createQuestion(user.getId(), dto.getCategory(), dto.getTitle(), dto.getContent());
+        QuestionDTO questionDTO = questionService.createQuestion(user.getId(), dto.getCategory(), dto.getTitle(), dto.getContent(),
+                dto.isSecret());
         return ResponseEntity.ok(JsonResponse.success(questionDTO, "성공적으로 문의 글을 생성했습니다."));
     }
 

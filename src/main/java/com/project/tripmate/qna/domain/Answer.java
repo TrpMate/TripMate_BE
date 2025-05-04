@@ -46,6 +46,8 @@ public class Answer {
         this.question = question;
         this.admin = admin;
         this.content = content;
+
+        question.setAnswer(this);
     }
 }
 

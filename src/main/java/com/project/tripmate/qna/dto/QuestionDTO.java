@@ -1,5 +1,6 @@
 package com.project.tripmate.qna.dto;
 
+import com.project.tripmate.qna.domain.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,4 +16,16 @@ public class QuestionDTO {
     private String title;
     private String content;
     private String createdDate;
+    private boolean secret;
+
+    public static QuestionDTO fromEntity(Question question) {
+        return new QuestionDTO(
+                question.getId(),
+                question.getCategory(),
+                question.getTitle(),
+                question.getContent(),
+                question.getCreatedAt().toString(),
+                question.isSecret()
+        );
+    }
 }

@@ -37,9 +37,10 @@ public class AnswerService {
 
         Answer answer = new Answer();
         answer.createAnswer(question, admin, content);
+
         answerRepository.save(answer);
 
-        return new AnswerDTO(answer.getId(), answer.getQuestion(), answer.getContent(), answer.getCreatedAt());
+        return AnswerDTO.fromEntity(answer);
     }
 }
 

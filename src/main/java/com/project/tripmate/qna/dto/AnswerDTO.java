@@ -1,5 +1,6 @@
 package com.project.tripmate.qna.dto;
 
+import com.project.tripmate.qna.domain.Answer;
 import com.project.tripmate.qna.domain.Question;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -16,4 +17,13 @@ public class AnswerDTO {
     private Question question;
     private String content;
     private LocalDateTime createdAt;
+
+    public static AnswerDTO fromEntity(Answer answer) {
+        return new AnswerDTO(
+                answer.getId(),
+                answer.getQuestion(),
+                answer.getContent(),
+                answer.getCreatedAt()
+        );
+    }
 }
