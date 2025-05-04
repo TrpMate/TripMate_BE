@@ -1,7 +1,6 @@
 package com.project.tripmate.course.controller;
 
 import com.project.tripmate.course.dto.CourseDayAndPlaceDTO;
-import com.project.tripmate.course.dto.CoursePlaceDTO;
 import com.project.tripmate.global.JsonResponse;
 import com.project.tripmate.course.domain.CourseDay;
 import com.project.tripmate.course.dto.CourseDayDTO;

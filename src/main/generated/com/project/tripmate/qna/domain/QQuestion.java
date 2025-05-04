@@ -32,6 +32,10 @@ public class QQuestion extends EntityPathBase<Question> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath secret = createBoolean("secret");
+
+    public final EnumPath<QnaStatus> status = createEnum("status", QnaStatus.class);
+
     public final StringPath title = createString("title");
 
     public final com.project.tripmate.user.domain.QUser user;

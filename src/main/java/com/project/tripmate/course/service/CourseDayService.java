@@ -4,8 +4,6 @@ import com.project.tripmate.course.domain.Course;
 import com.project.tripmate.course.domain.CourseDay;
 import com.project.tripmate.course.domain.CoursePlace;
 import com.project.tripmate.course.dto.CourseDayAndPlaceDTO;
-import com.project.tripmate.course.dto.CourseDayDTO;
-import com.project.tripmate.course.dto.CoursePlaceDTO;
 import com.project.tripmate.course.mapper.CourseDayAndPlaceMapper;
 import com.project.tripmate.course.repository.CourseDayRepository;
 import com.project.tripmate.course.repository.CoursePlaceRepository;

@@ -2,8 +2,10 @@ package com.project.tripmate.course.service;
 
 import com.project.tripmate.course.domain.CourseDay;
 import com.project.tripmate.course.domain.CoursePlace;
+import com.project.tripmate.course.dto.CoursePlaceRequestDTO;
 import com.project.tripmate.course.repository.CourseDayRepository;
 import com.project.tripmate.course.repository.CoursePlaceRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,35 +25,25 @@ public class CoursePlaceService {
         this.courseDayRepository = courseDayRepository;
     }
 
-    // 생성
-    public CoursePlace createCoursePlace(
-            Long courseDayId,
-            String placeName,
-            String contentTypeId,
-            LocalTime visitStartTime,
-            LocalTime visitEndTime,
-            double mapX,
-            double mapY,
-            String phoneNumber,
-            String memo
-    ) {
-        Optional<CourseDay> courseDay = courseDayRepository.findById(courseDayId);
-        if (courseDay.isPresent()) {
-            CoursePlace coursePlace = CoursePlace.builder()
-                    .courseDay(courseDay.get())
-                    .placeName(placeName)
-                    .contentTypeId(contentTypeId)
-                    .visitStartTime(visitStartTime)
-                    .visitEndTime(visitEndTime)
-                    .mapX(mapX)
-                    .mapY(mapY)
-                    .phoneNumber(phoneNumber)
-                    .memo(memo)
-                    .build();
-            return coursePlaceRepository.save(coursePlace);
-        }
-        return null;
+    public CoursePlace createCoursePlace(CoursePlaceRequestDTO dto) {
+        CourseDay courseDay = courseDayRepository.findById(dto.getCourseDayId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 코스 일자를 찾을 수 없습니다."));
+
+        CoursePlace coursePlace = CoursePlace.builder()
+                .courseDay(courseDay)
+                .placeName(dto.getPlaceName())
+                .contentTypeId(dto.getContentTypeId())
+                .visitStartTime(dto.getVisitStartTime())
+                .visitEndTime(dto.getVisitEndTime())
+                .mapX(dto.getMapX())
+                .mapY(dto.getMapY())
+                .phoneNumber(dto.getPhoneNumber())
+                .memo(dto.getMemo())
+                .build();
+
+        return coursePlaceRepository.save(coursePlace);
     }
+
 
     // 조회
     public Optional<CoursePlace> getCoursePlaceById(Long id) {
@@ -62,35 +54,24 @@ public class CoursePlaceService {
         return coursePlaceRepository.findAll();
     }
 
-    // 수정
-    public CoursePlace updateCoursePlace(
-            Long id,
-            String placeName,
-            String contentTypeId,
-            LocalTime visitStartTime,
-            LocalTime visitEndTime,
-            double mapX,
-            double mapY,
-            String phoneNumber,
-            String memo
-    ) {
-        Optional<CoursePlace> existingCoursePlace = coursePlaceRepository.findById(id);
-        if (existingCoursePlace.isPresent()) {
-            CoursePlace coursePlace = existingCoursePlace.get();
-            coursePlace.updateCoursePlace(
-                    placeName,
-                    contentTypeId,
-                    visitStartTime,
-                    visitEndTime,
-                    mapX,
-                    mapY,
-                    phoneNumber,
-                    memo
-            );
-            return coursePlaceRepository.save(coursePlace);
-        }
-        return null;
+    public CoursePlace updateCoursePlace(Long id, CoursePlaceRequestDTO dto) {
+        CoursePlace coursePlace = coursePlaceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 코스 장소를 찾을 수 없습니다."));
+
+        coursePlace.updateCoursePlace(
+                dto.getPlaceName(),
+                dto.getContentTypeId(),
+                dto.getVisitStartTime(),
+                dto.getVisitEndTime(),
+                dto.getMapX(),
+                dto.getMapY(),
+                dto.getPhoneNumber(),
+                dto.getMemo()
+        );
+
+        return coursePlaceRepository.save(coursePlace);
     }
+
 
     // 삭제
     public void deleteCoursePlace(Long id) {
